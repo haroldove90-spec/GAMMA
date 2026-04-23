@@ -407,24 +407,24 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                       <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Compromiso</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full h-12 px-6 rounded-2xl bg-white border-gray-100 text-[10px] font-black uppercase tracking-widest shadow-sm text-left flex justify-between items-center hover:bg-gray-50",
-                                !field.value && "text-gray-300"
+                          <Button
+                            id="date-picker-trigger"
+                            variant={"outline"}
+                            type="button"
+                            className={cn(
+                              "w-full h-12 px-6 rounded-2xl bg-white border-gray-100 text-[10px] font-black uppercase tracking-widest shadow-sm text-left flex justify-between items-center hover:bg-gray-50",
+                              !field.value && "text-gray-300"
+                            )}
+                          >
+                            <span className="truncate">
+                              {field.value ? (
+                                format(field.value, "dd/MM/yy", { locale: es })
+                              ) : (
+                                "Fecha..."
                               )}
-                            >
-                              <span className="truncate">
-                                {field.value ? (
-                                  format(field.value, "dd/MM/yy", { locale: es })
-                                ) : (
-                                  "Fecha..."
-                                )}
-                              </span>
-                              <CalendarIcon className="h-4 w-4 opacity-50 flex-shrink-0" />
-                            </Button>
-                          </FormControl>
+                            </span>
+                            <CalendarIcon className="h-4 w-4 opacity-50 flex-shrink-0" />
+                          </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
