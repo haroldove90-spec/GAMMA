@@ -2,15 +2,20 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
   // Inyectar variables de entorno al cliente de forma segura si es necesario
+  console.log('Configurando cliente con URL:', process.env.VITE_SUPABASE_URL ? 'OK (definida)' : 'ERROR (undefined)');
+  
   app.get("/config.js", (req, res) => {
     res.type("application/javascript");
     res.send(`

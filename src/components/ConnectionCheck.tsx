@@ -30,7 +30,15 @@ export function ConnectionCheck() {
   }, []);
 
   return (
-    <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-full transition-all hover:bg-white/10">
+    <div 
+      className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-full transition-all hover:bg-white/10 cursor-help"
+      onClick={() => {
+        if (status === 'error') {
+          const info = (window as any).VITE_SUPABASE_URL ? 'Variables de servidor detectadas' : 'Usando variables de compilación';
+          window.alert(`DIAGNÓSTICO DE CONEXIÓN:\n\nEstatus: ${status}\nError: ${errorMessage || 'Sin mensaje'}\nOrigen: ${info}\nURL: ${(window as any).VITE_SUPABASE_URL || 'No detectada'}`);
+        }
+      }}
+    >
       <DbIcon className="w-4 h-4 text-white/50" />
       
       {status === 'loading' && (
@@ -49,10 +57,14 @@ export function ConnectionCheck() {
       )}
 
       {status === 'error' && (
-        <div className="flex items-center gap-2">
-          <XCircle className="w-3 h-3 text-red-500" />
-          <span className="text-[10px] uppercase font-bold tracking-widest text-red-500">Error de Conexión</span>
-          <span className="text-[8px] opacity-60 font-mono hidden md:inline text-red-400">Verifica Credenciales VITE_ o ejecuta el SQL</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <XCircle className="w-3 h-3 text-red-500" />
+            <span className="text-[10px] uppercase font-bold tracking-widest text-red-500">Error de Conexión</span>
+          </div>
+          <span className="text-[8px] font-mono text-red-400 max-w-[200px] truncate" title={errorMessage || ''}>
+            {errorMessage || 'Verifica credenciales o SQL'}
+          </span>
         </div>
       )}
     </div>

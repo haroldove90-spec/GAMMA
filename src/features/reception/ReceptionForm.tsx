@@ -105,20 +105,31 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
 
   async function onSubmit(values: ReceptionFormValues) {
     setIsSubmitting(true);
-    const result = await createReceptionOrder(values);
-    setIsSubmitting(false);
+    try {
+      const result = await createReceptionOrder(values);
+      setIsSubmitting(false);
 
-    if (result.success) {
-      toast.success('Orden registrada con éxito');
-      setLastOrder({ id: result.ordenId, folio: result.folio, values });
-      // Generar y mostrar ticket
-      await handlePrint({ id: result.ordenId, folio: result.folio }, values);
-    } else {
-      console.error('Detalle del error de registro:', result.error);
-      toast.error('Error: ' + result.error, {
-        description: 'Verifica la conexión a la base de datos o si las tablas existen.',
-        duration: 5000
-      });
+      if (result.success) {
+        toast.success('Orden registrada con éxito');
+        setLastOrder({ id: result.ordenId, folio: result.folio, values });
+        await handlePrint({ id: result.ordenId, folio: result.folio }, values);
+      } else {
+        const errorMsg = result.error || 'Error desconocido';
+        console.error('Error detallado de registro:', errorMsg);
+        
+        // Alerta agresiva para diagnóstico
+        window.alert(`ERROR AL GUARDAR REGISTRO:\n\n${errorMsg}\n\nDetalle: Verifica si las tablas existen en Supabase y si las credenciales son correctas.`);
+        
+        toast.error('Error: ' + errorMsg, {
+          description: 'Verifica la conexión a la base de datos o si las tablas existen.',
+          duration: 10000
+        });
+      }
+    } catch (err: any) {
+      setIsSubmitting(false);
+      const msg = err?.message || 'Error de excepción';
+      window.alert(`EXCEPCIÓN CRÍTICA:\n\n${msg}`);
+      toast.error('Excepción: ' + msg);
     }
   }
 
