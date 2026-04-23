@@ -5,6 +5,8 @@ import { ReceptionForm } from './features/reception/ReceptionForm';
 import { WorkshopDashboard } from './features/workshop/WorkshopDashboard';
 import { AdminDashboard } from './features/admin/AdminDashboard';
 
+import { ConnectionCheck } from './components/ConnectionCheck';
+
 type AppView = 'dashboard' | 'reception' | 'workshop' | 'admin';
 
 export default function App() {
@@ -16,9 +18,14 @@ export default function App() {
       
       {/* Header Section with Bold Typography */}
       <header className="p-6 md:p-8 flex flex-col md:flex-row justify-between items-baseline border-b border-white/10 gap-4">
-        <div className="flex items-baseline gap-4 cursor-pointer" onClick={() => setView('dashboard')}>
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none select-none text-white">GAMA</h1>
-          <span className="text-xs uppercase tracking-[0.4em] font-medium text-yellow-400">Centro de Reparación</span>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-baseline gap-4 cursor-pointer" onClick={() => setView('dashboard')}>
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none select-none text-white">GAMA</h1>
+            <span className="text-xs uppercase tracking-[0.4em] font-medium text-yellow-400">Centro de Reparación</span>
+          </div>
+          <div className="mt-2">
+            <ConnectionCheck />
+          </div>
         </div>
         
         <div className="flex flex-col md:flex-row items-baseline gap-6 w-full md:w-auto">
