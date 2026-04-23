@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Settings, Plus, Terminal, Package, ClipboardList, AlertTriangle, ChevronLeft, LayoutDashboard, Wrench, BarChart3 } from 'lucide-react';
+import { Settings, Plus, Terminal, Package, ClipboardList, AlertTriangle, ChevronLeft, LayoutDashboard, Wrench, BarChart3, Search, LogOut, Layout, User, Bell, TrendingUp, TrendingDown } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 import { InstallPrompt } from './components/InstallPrompt';
 import { ReceptionForm } from './features/reception/ReceptionForm';
 import { WorkshopDashboard } from './features/workshop/WorkshopDashboard';
 import { AdminDashboard } from './features/admin/AdminDashboard';
+import { cn } from '@/lib/utils';
 
 import { ConnectionCheck } from './components/ConnectionCheck';
 
@@ -14,298 +15,282 @@ export default function App() {
   const [view, setView] = useState<AppView>('dashboard');
 
   return (
-    <div className="bg-[#002D4C] text-[#F8F8F8] font-sans min-h-screen flex flex-col overflow-x-hidden">
+    <div className="bg-[#E9EDF1] text-[#2D3748] font-sans min-h-screen flex overflow-hidden">
       <Toaster position="top-right" richColors />
       <InstallPrompt />
       
-      {/* Header Section with Bold Typography */}
-      <header className="p-6 md:p-8 flex flex-col md:flex-row justify-between items-baseline border-b border-white/10 gap-4 bg-[#002D4C]">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-4 cursor-pointer" onClick={() => setView('dashboard')}>
+      {/* Sidebar - Gama Navy #002B45 */}
+      <aside className="w-68 bg-[#002B45] flex flex-col shadow-2xl z-20 shrink-0">
+        <div className="p-8 flex items-center gap-3">
+          <div className="bg-white p-2 rounded-xl shadow-inner">
             <img 
               src="https://cossma.com.mx/gama.png" 
               alt="Gama Logo" 
-              className="h-12 md:h-16 w-auto object-contain"
+              className="h-8 w-auto"
             />
-            <div className="flex flex-col">
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter leading-none select-none text-white italic">GAMA</h1>
-              <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-[#FF4F00]">Centro de Reparación</span>
-            </div>
           </div>
-          <div className="mt-2">
+          <div>
+            <h1 className="text-xl font-black tracking-tighter text-white italic leading-none">GAMA</h1>
+            <p className="text-[7px] uppercase font-bold text-[#FF4F00] tracking-widest mt-1">REPAIR CENTER</p>
+          </div>
+        </div>
+
+        <nav className="flex-1 px-4 mt-6 space-y-2">
+          <SidebarItem 
+            active={view === 'dashboard'} 
+            onClick={() => setView('dashboard')} 
+            icon={<LayoutDashboard className="w-5 h-5" />}
+            label="Dashboard"
+          />
+          <SidebarItem 
+            active={view === 'admin'} 
+            onClick={() => setView('admin')} 
+            icon={<BarChart3 className="w-5 h-5" />}
+            label="Estadísticas"
+            badge="2"
+          />
+          <SidebarItem 
+            active={view === 'workshop'} 
+            onClick={() => setView('workshop')} 
+            icon={<Wrench className="w-5 h-5" />}
+            label="Taller"
+          />
+          <SidebarItem 
+            active={view === 'reception'} 
+            onClick={() => setView('reception')} 
+            icon={<ClipboardList className="w-5 h-5" />}
+            label="Formularios"
+          />
+        </nav>
+
+        <div className="p-6 border-t border-white/5 space-y-4">
+          <div className="opacity-80 scale-90 origin-left">
             <ConnectionCheck />
           </div>
+          <button className="flex items-center gap-3 w-full px-4 py-3 text-white/40 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all group">
+            <LogOut className="w-4 h-4 group-hover:text-[#FF4F00] transition-colors" />
+            Cerrar Sesión
+          </button>
         </div>
-        
-        <div className="flex flex-col md:flex-row items-baseline gap-6 w-full md:w-auto">
-          <nav className="flex gap-4 mb-4 md:mb-0">
-            <NavButton 
-              active={view === 'dashboard'} 
-              onClick={() => setView('dashboard')} 
-              icon={<LayoutDashboard className="w-4 h-4" />}
-              label="Admin"
-            />
-            <NavButton 
-              active={view === 'workshop'} 
-              onClick={() => setView('workshop')} 
-              icon={<Wrench className="w-4 h-4" />}
-              label="Taller"
-            />
-            <NavButton 
-              active={view === 'admin'} 
-              onClick={() => setView('admin')} 
-              icon={<BarChart3 className="w-4 h-4" />}
-              label="Inteligencia"
-            />
-          </nav>
-          <div className="text-left md:text-right w-full md:w-auto">
-            <p className="text-[10px] md:text-sm font-mono opacity-50 uppercase text-white/50">Estado del Sistema / {new Date().toLocaleDateString('es-MX')}</p>
-            <p className="text-xl md:text-2xl font-bold uppercase tracking-tight text-white">
-              {view === 'dashboard' ? 'Dashboard Administrativo' : 
-               view === 'reception' ? 'Módulo de Recepción' : 
-               view === 'admin' ? 'Inteligencia de Negocio' : 'Taller Operativo'}
-            </p>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden relative">
+        {/* Top Header */}
+        <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 shrink-0 shadow-sm z-10">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-gray-400 text-[10px] font-black uppercase tracking-widest">
+              <Layout className="w-4 h-4" />
+              <span>/</span>
+              <span className="text-gray-700">{view}</span>
+            </div>
           </div>
+
+          <div className="flex items-center gap-8">
+            <div className="relative group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 group-focus-within:text-[#FF4F00] transition-colors" />
+              <input 
+                type="text" 
+                placeholder="Buscar por folio o cliente..." 
+                className="bg-[#F8FAFC] border border-gray-100 rounded-xl pl-12 pr-6 py-2.5 text-xs w-80 focus:ring-1 focus:ring-[#FF4F00]/30 focus:bg-white transition-all outline-none font-medium text-gray-600"
+              />
+            </div>
+            
+            <div className="flex items-center gap-4 border-l border-gray-100 pl-8">
+              <div className="text-right">
+                <p className="text-[10px] font-black uppercase text-gray-800 leading-tight tracking-tighter">Administrador</p>
+                <p className="text-[8px] font-bold text-[#FF4F00] uppercase tracking-widest">Gama Pro</p>
+              </div>
+              <div className="w-10 h-10 rounded-2xl bg-[#002D4C] flex items-center justify-center text-white font-black text-xs shadow-lg shadow-[#002D4C]/20 border border-white/10">
+                G1
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Content Scroll Area */}
+        <div className="flex-1 overflow-y-auto p-10 bg-[#E9EDF1]">
+          {view === 'dashboard' && (
+            <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-10 max-w-7xl mx-auto">
+              {/* Widgets Summary */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <WidgetCard label="Ventas Mensuales" value="$84.2k" color="text-[#FF4F00]" trend="up" />
+                <WidgetCard label="Órdenes Activas" value="156" color="text-[#002D4C]" trend="up" />
+                <WidgetCard label="Diagnósticos" value="28" color="text-[#002D4C]" trend="down" />
+                <WidgetCard label="Pendientes" value="12" color="text-red-500" trend="warning" />
+              </div>
+
+              {/* Main Content Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                {/* Table Widget */}
+                <div className="lg:col-span-2 bg-white rounded-[40px] shadow-xl shadow-gray-200/50 border border-white overflow-hidden">
+                  <div className="p-10 border-b border-gray-50 flex justify-between items-center bg-white">
+                    <div>
+                      <h3 className="font-black text-gray-800 uppercase text-xs tracking-[0.2em]">Registro de Actividad</h3>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Últimas 24 horas</p>
+                    </div>
+                    <button 
+                      onClick={() => setView('reception')}
+                      className="bg-[#FF4F00] text-white text-[10px] px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-[#E64700] transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[#FF4F00]/30"
+                    >
+                      Nueva Orden +
+                    </button>
+                  </div>
+                  
+                  <div className="divide-y divide-gray-50">
+                    <div className="grid grid-cols-6 p-5 bg-gray-50/50 text-[9px] font-black uppercase tracking-widest text-gray-400 px-10">
+                      <div>Folio</div>
+                      <div className="col-span-2">Equipo</div>
+                      <div className="col-span-2">Cliente</div>
+                      <div className="text-right">Estado</div>
+                    </div>
+                    <OrderRowUI id="GMA-001" eq="TV Samsung 55" cl="M. Lopez" ph="55 12..34" st="En Proceso" />
+                    <OrderRowUI id="GMA-002" eq="MacBook Pro" cl="R. Mendez" ph="55 56..78" st="Pendiente" />
+                    <OrderRowUI id="GMA-003" eq="PS5 Slim" cl="C. Ortiz" ph="55 99..00" st="Listo" />
+                    <OrderRowUI id="GMA-004" eq="Xbox Series X" cl="L. Diaz" ph="55 44..55" st="Entregado" />
+                  </div>
+                </div>
+
+                {/* Secondary Widgets Column */}
+                <div className="space-y-8">
+                  <div className="bg-white rounded-[40px] p-10 shadow-xl shadow-gray-200/50 border border-white">
+                    <h3 className="font-black text-xs uppercase tracking-widest mb-8 text-gray-800">Alertas de Stock</h3>
+                    <div className="space-y-6">
+                       <ProgressItem name="Componentes Audio" percent={15} color="bg-red-500" value="02" />
+                       <ProgressItem name="Refacciones Video" percent={45} color="bg-[#FF4F00]" value="08" />
+                       <ProgressItem name="Insumos Taller" percent={85} color="bg-blue-500" value="45" />
+                    </div>
+                  </div>
+
+                  <div className="bg-[#002D4C] rounded-[40px] p-10 shadow-2xl text-white relative overflow-hidden group border border-white/5">
+                    <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-[#FF4F00]/20 rounded-full blur-3xl group-hover:bg-[#FF4F00]/30 transition-colors duration-700"></div>
+                    <h3 className="text-[10px] font-black uppercase tracking-widest mb-2 text-[#FF4F00]">Status Operativo</h3>
+                    <p className="text-2xl font-black tracking-tight leading-tight mb-6">Eficiencia del<br/>Taller: 94%</p>
+                    <div className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/5">
+                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-500/50"></div>
+                       <span className="text-[9px] font-black uppercase tracking-widest opacity-70">Sistema en Línea</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {view === 'admin' && (
+            <main className="animate-in fade-in zoom-in duration-700">
+              <AdminDashboard />
+            </main>
+          )}
+
+          {view === 'workshop' && (
+            <main className="h-full animate-in fade-in slide-in-from-right-6 duration-700">
+              <WorkshopDashboard />
+            </main>
+          )}
+
+          {view === 'reception' && (
+            <main className="bg-white rounded-[40px] shadow-2xl p-10 border border-white animate-in fade-in zoom-in duration-500 max-w-4xl mx-auto">
+              <ReceptionForm 
+                onBack={() => setView('dashboard')} 
+                onSuccess={() => setView('dashboard')} 
+              />
+            </main>
+          )}
         </div>
-      </header>
-
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {view === 'dashboard' && (
-          <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-px bg-white/5 p-px animate-in fade-in duration-500 overflow-y-auto">
-            {/* Left Col: Key Metrics */}
-            <section className="lg:col-span-3 bg-[#0F1115] p-6 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/10">
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-white/40 mb-8 lg:mb-12">Órdenes Activas</p>
-                <div className="grid grid-cols-2 lg:grid-cols-1 gap-8">
-                  <div>
-                    <span className="text-4xl md:text-6xl font-black leading-none block">24</span>
-                    <span className="text-xs uppercase font-bold text-yellow-500">Pendientes</span>
-                  </div>
-                  <div>
-                    <span className="text-4xl md:text-6xl font-black leading-none block text-blue-400">12</span>
-                    <span className="text-xs uppercase font-bold">En Proceso</span>
-                  </div>
-                  <div>
-                    <span className="text-4xl md:text-6xl font-black leading-none block text-green-500">08</span>
-                    <span className="text-xs uppercase font-bold">Listos</span>
-                  </div>
-                </div>
-              </div>
-              <div className="pt-8 border-t border-white/10 mt-8">
-                <button 
-                  onClick={() => setView('reception')}
-                  className="w-full bg-white text-black py-4 font-black uppercase text-xs tracking-widest hover:bg-yellow-400 transition-colors flex items-center justify-center gap-2 group"
-                  id="btn-new-order"
-                >
-                  <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
-                  Nueva Orden
-                </button>
-              </div>
-            </section>
-
-            {/* Middle Col: Recent Service Orders */}
-            <section className="lg:col-span-6 bg-[#0F1115] p-6 overflow-x-auto">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-sm uppercase tracking-widest font-bold border-l-4 border-yellow-400 pl-3">Ordenes Recientes</h2>
-                <div className="flex gap-2">
-                  <span className="text-[10px] bg-white/10 px-2 py-1 rounded cursor-pointer hover:bg-white/20 transition-colors">VISTA GLOBAL</span>
-                  <span className="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded cursor-pointer border border-blue-500/30">ACTUALIZANDO...</span>
-                </div>
-              </div>
-              
-              <div className="space-y-px bg-white/10 min-w-[600px]">
-                {/* Table Header */}
-                <div className="grid grid-cols-6 text-[10px] font-bold uppercase tracking-widest p-3 bg-[#16191E] opacity-50">
-                  <div className="col-span-1">ID</div>
-                  <div className="col-span-2">Equipo</div>
-                  <div className="col-span-2">Cliente</div>
-                  <div className="col-span-1">Estado</div>
-                </div>
-
-                {/* Order Rows Mock Data */}
-                <OrderRow 
-                  id="#ORD-1024" 
-                  equipment={'Smart TV Samsung 55"'} 
-                  serial="SN-92834-X"
-                  client="Ricardo Mendez"
-                  phone="55-1234-5678"
-                  status="Proceso"
-                  statusColor="bg-yellow-400 text-black"
-                />
-                <OrderRow 
-                  id="#ORD-1025" 
-                  equipment={'MacBook Pro 14" M2'} 
-                  serial="APPLE-Z0921"
-                  client="Elena Guerrero"
-                  phone="55-8765-4321"
-                  status="Pendiente"
-                  statusColor="bg-red-500 text-white"
-                />
-                <OrderRow 
-                  id="#ORD-1026" 
-                  equipment="Amplificador Marantz" 
-                  serial="MZ-V1900"
-                  client="Audio Design S.A."
-                  phone="55-5555-5555"
-                  status="Listo"
-                  statusColor="bg-green-500 text-white"
-                />
-                <OrderRow 
-                  id="#ORD-1027" 
-                  equipment="PS5 Digital Edition" 
-                  serial="PLAY-9921-A"
-                  client="Julian Ortega"
-                  phone="55-2233-4455"
-                  status="Entregado"
-                  statusColor="bg-white/20 text-white/60"
-                />
-              </div>
-            </section>
-
-            {/* Right Col: Parts & Inventory */}
-            <section className="lg:col-span-3 bg-[#0F1115] p-6 lg:border-l border-white/10 overflow-y-auto">
-              <h2 className="text-sm uppercase tracking-widest font-bold mb-6 flex items-center gap-2">
-                <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span> Inventario Refacciones
-              </h2>
-              
-              <div className="space-y-4">
-                <InventoryItem 
-                  name="Capacitor 4700uF 50V"
-                  stock={124}
-                  price="$4.50 CU"
-                  percentage={80}
-                  color="bg-blue-500"
-                />
-                <InventoryItem 
-                  name={'Panel LED 55" LG-K'}
-                  stock={2}
-                  price="LOW STOCK"
-                  percentage={10}
-                  color="bg-red-500"
-                  alert={true}
-                />
-                <InventoryItem 
-                  name="Pasta Térmica MX-4"
-                  stock={15}
-                  price="$18.00 CU"
-                  percentage={45}
-                  color="bg-blue-500"
-                />
-                <InventoryItem 
-                  name="Switch HDMI 4K"
-                  stock={8}
-                  price="$35.00 CU"
-                  percentage={25}
-                  color="bg-yellow-500"
-                />
-              </div>
-
-              <div className="mt-8 pt-8 border-t border-white/10">
-                <p className="text-[10px] font-mono opacity-30 leading-relaxed uppercase">
-                  Gama v1.0.5<br/>
-                  Cloud Connection: Stable<br/>
-                  Latency: 38ms<br/>
-                  Server: MX-SOUTH-01
-                </p>
-              </div>
-            </section>
-          </main>
-        )}
-
-        {view === 'workshop' && (
-          <main className="flex-1 bg-white overflow-y-auto animate-in fade-in slide-in-from-right-4 duration-500">
-            <WorkshopDashboard />
-          </main>
-        )}
-
-        {view === 'admin' && (
-          <main className="flex-1 bg-[#0b0c10] overflow-y-auto animate-in fade-in zoom-in duration-500">
-            <AdminDashboard />
-          </main>
-        )}
-
-        {view === 'reception' && (
-          <main className="flex-1 bg-white overflow-y-auto">
-            <ReceptionForm 
-              onBack={() => setView('dashboard')} 
-              onSuccess={() => setView('dashboard')} 
-            />
-          </main>
-        )}
       </div>
-
-      {/* Bottom Bar: Status Info */}
-      <footer className="bg-white text-black px-6 md:px-8 py-2 flex flex-col md:flex-row justify-between items-center text-[10px] font-bold uppercase tracking-widest gap-2">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-          SISTEMA ACTIVO: ADMIN_USER_01
-        </div>
-        <div className="flex flex-wrap justify-center gap-4 md:gap-8">
-          <span>ORDENES TOTALES: 1,482</span>
-          <span className="text-red-600 underline flex items-center gap-1 cursor-pointer">
-            <AlertTriangle className="w-3 h-3" />
-            2 ALERTAS DE STOCK
-          </span>
-          <span className="opacity-40">TERMINALES CONECTADAS: 04</span>
-        </div>
-      </footer>
     </div>
   );
 }
 
-function NavButton({ active, onClick, icon, label }: any) {
+function SidebarItem({ active, onClick, icon, label, badge }: any) {
   return (
     <button 
       onClick={onClick}
       className={cn(
-        "flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all",
+        "w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all duration-500 group relative overflow-hidden",
         active 
-          ? "bg-[#FF4F00] text-white shadow-lg shadow-[#FF4F00]/20" 
-          : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
+          ? "bg-[#FF4F00] text-white shadow-xl shadow-[#FF4F00]/20 scale-[1.03]" 
+          : "text-white/30 hover:bg-white/5 hover:text-white"
       )}
     >
-      {icon}
-      {label}
+      <div className="flex items-center gap-4 z-10">
+        <span className={cn("transition-all duration-500", active ? "text-white scale-110" : "group-hover:text-[#FF4F00]")}>
+          {icon}
+        </span>
+        <span className="text-[10px] font-black uppercase tracking-[0.2em]">{label}</span>
+      </div>
+      {badge && (
+        <span className={cn(
+          "text-[9px] font-black px-2.5 py-1 rounded-lg z-10",
+          active ? "bg-white text-[#FF4F00]" : "bg-[#FF4F00] text-white"
+        )}>
+          {badge}
+        </span>
+      )}
+      {active && (
+        <div className="absolute right-0 top-0 bottom-0 w-1.5 bg-white rounded-l-full"></div>
+      )}
     </button>
   );
 }
 
-function OrderRow({ id, equipment, serial, client, phone, status, statusColor }: any) {
+function WidgetCard({ label, value, color, trend }: any) {
   return (
-    <div className="grid grid-cols-6 items-center p-4 bg-[#0F1115] hover:bg-white/5 transition-colors cursor-pointer group">
-      <div className="font-mono text-sm opacity-60 group-hover:opacity-100">{id}</div>
+    <div className="bg-white p-8 rounded-[45px] shadow-xl shadow-gray-200/40 border border-white hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group">
+      <div className="flex justify-between items-start mb-6">
+        <p className="text-[9px] uppercase font-black tracking-widest text-gray-300 group-hover:text-[#FF4F00] transition-colors">{label}</p>
+        <div className={cn(
+          "w-8 h-8 rounded-2xl flex items-center justify-center opacity-20",
+          trend === 'up' ? "bg-green-500" : trend === 'down' ? "bg-red-500" : "bg-orange-500"
+        )}>
+          {trend === 'up' ? <TrendingUp className="w-4 h-4 text-green-700" /> : <TrendingDown className="w-4 h-4 text-red-700" />}
+        </div>
+      </div>
+      <span className={cn("text-4xl font-black tracking-tighter block", color)}>{value}</span>
+      <div className="mt-8 flex items-center justify-between ">
+        <span className="text-[10px] font-black text-gray-400">vs Mes Pasado</span>
+        <div className="flex gap-1 h-8 items-end">
+          <div className="w-1 bg-gray-50 rounded-full h-[40%] group-hover:h-[70%] transition-all duration-500"></div>
+          <div className="w-1 bg-gray-50 rounded-full h-[60%] group-hover:h-[90%] transition-all duration-500 delay-75"></div>
+          <div className="w-1 bg-[#FF4F00] rounded-full h-[20%] group-hover:h-[100%] transition-all duration-500 delay-150"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OrderRowUI({ id, eq, cl, ph, st }: any) {
+  const stColor = st === 'Listo' ? 'bg-green-50 text-green-600' : st === 'En Proceso' ? 'bg-blue-50 text-blue-600' : st === 'Entregado' ? 'bg-gray-50 text-gray-400' : 'bg-orange-50 text-orange-600';
+  return (
+    <div className="grid grid-cols-6 items-center p-6 bg-white hover:bg-gray-50 transition-all cursor-pointer group px-10">
+      <div className="font-mono text-xs font-black text-gray-300 group-hover:text-[#FF4F00] transition-colors">{id}</div>
       <div className="col-span-2">
-        <p className="font-bold text-sm uppercase tracking-tight">{equipment}</p>
-        <p className="text-[10px] opacity-40 font-mono tracking-tighter">S/N: {serial}</p>
+        <p className="font-black text-[11px] text-gray-800 uppercase tracking-tight">{eq}</p>
+        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Diagnóstico pend.</p>
       </div>
       <div className="col-span-2">
-        <p className="text-sm font-medium">{client}</p>
-        <p className="text-[10px] text-blue-400 font-mono italic">WA: {phone}</p>
+        <p className="text-[11px] font-black text-gray-700 uppercase leading-none">{cl}</p>
+        <p className="text-[9px] text-[#FF4F00] font-black mt-1.5 tracking-widest">{ph}</p>
       </div>
-      <div className="col-span-1">
-        <span className={`px-2 py-1 text-[9px] font-black uppercase inline-block text-center min-w-[75px] ${statusColor}`}>
-          {status}
+      <div className="text-right">
+        <span className={cn("px-4 py-1.5 text-[8px] font-black uppercase rounded-xl inline-block", stColor)}>
+          {st}
         </span>
       </div>
     </div>
   );
 }
 
-function InventoryItem({ name, stock, price, percentage, color, alert }: any) {
+function ProgressItem({ name, percent, color, value }: any) {
   return (
-    <div className={`border border-white/10 p-4 transition-all hover:border-white/30 ${alert ? 'bg-red-900/10 border-red-500/50' : 'bg-white/5'}`}>
-      <p className={`text-[10px] uppercase font-bold mb-1 ${alert ? 'text-red-400' : 'opacity-50'}`}>{name}</p>
-      <div className="flex justify-between items-end mt-1">
-        <span className="text-3xl font-black leading-none">{stock.toString().padStart(2, '0')}</span>
-        <span className={`text-[10px] font-mono ${alert ? 'text-red-400' : 'text-green-400'}`}>{price}</span>
+    <div className="space-y-3">
+      <div className="flex justify-between items-end">
+        <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest">{name}</p>
+        <span className={cn("text-xl font-black leading-none", percent < 20 ? "text-red-500" : "text-gray-900 tracking-tighter")}>{value}</span>
       </div>
-      <div className="w-full bg-white/10 h-1 mt-3">
-        <div className={`${color} h-full transition-all duration-1000`} style={{ width: `${percentage}%` }}></div>
+      <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden border border-gray-100 shadow-inner p-[1px]">
+        <div className={cn("h-full rounded-full transition-all duration-1000 shadow-sm", color)} style={{ width: `${percent}%` }}></div>
       </div>
     </div>
   );
-}
-
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ');
 }

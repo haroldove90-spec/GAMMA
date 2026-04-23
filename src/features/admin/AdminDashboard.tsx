@@ -31,7 +31,6 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { exportToCSV } from '@/src/services/financeService';
 
@@ -61,7 +60,6 @@ const MOCK_DATA = {
 
 export function AdminDashboard() {
   const [data, setData] = React.useState(MOCK_DATA);
-  const [loading, setLoading] = React.useState(false);
 
   const handleExport = () => {
     const reportData = [
@@ -75,28 +73,28 @@ export function AdminDashboard() {
   };
 
   return (
-    <div className="bg-[#002D4C] min-h-screen text-[#f8f8f8] p-4 md:p-8 font-sans">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-transparent min-h-screen text-gray-800 p-0 font-sans">
+      <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in zoom-in duration-700">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-4xl font-black tracking-tighter uppercase flex items-center gap-3">
-              <TrendingUp className="w-10 h-10 text-[#FF4F00]" />
-              Business Intelligence
+            <h1 className="text-4xl font-black tracking-tighter uppercase flex items-center gap-3 text-[#002D4C]">
+              <BarChart3 className="w-10 h-10 text-[#FF4F00]" />
+              BI & Finanzas
             </h1>
-            <p className="text-white/40 font-mono text-xs uppercase tracking-widest mt-1">Salud Financiera & Operativa GAMA</p>
+            <p className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.2em] mt-1">Gama Repair Center System</p>
           </div>
           <div className="flex gap-4">
             <Button 
               variant="outline" 
-              className="border-white/10 text-white bg-white/5 hover:bg-white/10"
-              onClick={() => toast.info('Sincronizando datos...')}
+              className="border-gray-200 text-gray-600 bg-white hover:bg-gray-50 rounded-2xl h-12 px-6"
+              onClick={() => toast.info('Filtrando datos...')}
             >
-              <Calendar className="w-4 h-4 mr-2" />
+              <Calendar className="w-4 h-4 mr-2 text-[#FF4F00]" />
               Este Mes
             </Button>
             <Button 
-              className="bg-[#FF4F00] hover:bg-[#e64700] text-white font-bold"
+              className="bg-[#FF4F00] hover:bg-[#e64700] text-white font-black uppercase text-[10px] tracking-widest h-12 px-8 rounded-2xl shadow-xl shadow-[#FF4F00]/20 transition-transform active:scale-95"
               onClick={handleExport}
             >
               <Download className="w-4 h-4 mr-2" />
@@ -105,69 +103,77 @@ export function AdminDashboard() {
           </div>
         </div>
 
-        {/* Financial KPIs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <KPICard 
+        {/* Primary Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard 
             title="Ingresos Totales" 
             value={`$${data.revenue.toLocaleString()}`} 
-            icon={<DollarSign className="w-6 h-6 text-green-500" />}
-            trend="+12% vs anterior"
-            isPositive={true}
+            icon={<DollarSign className="text-green-500" />} 
+            trend="+15%" 
+            trendUp={true}
           />
-          <KPICard 
+          <StatCard 
             title="Gastos Refacciones" 
             value={`$${data.expense.toLocaleString()}`} 
-            icon={<TrendingDown className="w-6 h-6 text-red-500" />}
-            trend="+5% en costos"
-            isPositive={false}
+            icon={<PackageSearch className="text-[#FF4F00]" />} 
+            trend="-2%" 
+            trendUp={false}
           />
-          <KPICard 
+          <StatCard 
             title="Utilidad Neta" 
             value={`$${data.profit.toLocaleString()}`} 
-            icon={<BarChart3 className="w-6 h-6 text-[#FF6B35]" />}
-            trend="Rendimiento Óptimo"
-            isPositive={true}
+            icon={<TrendingUp className="text-blue-500" />} 
+            trend="+18%" 
+            trendUp={true}
           />
-          <KPICard 
-            title="Tasa Conversión" 
+          <StatCard 
+            title="Tasa de Conversión" 
             value={`${data.conversionRate}%`} 
-            icon={<TrendingUp className="w-6 h-6 text-blue-500" />}
-            trend="Alta efectividad"
-            isPositive={true}
+            icon={<TrendingUp className="text-purple-500" />} 
+            trend="+5%" 
+            trendUp={true}
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Charts Section */}
-          <Card className="lg:col-span-2 bg-[#16191E] border-white/5 shadow-2xl">
-            <CardHeader>
-              <CardTitle className="text-white font-black uppercase text-sm tracking-widest flex items-center gap-2">
-                Reparaciones por Categoría
-              </CardTitle>
-              <CardDescription className="text-white/40">Volumen de equipos entregados exitosamente</CardDescription>
+        {/* Middle Section: Visualization & Cash Closing */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          {/* Chart Card */}
+          <Card className="lg:col-span-2 bg-white rounded-[45px] shadow-2xl shadow-gray-200/50 border-none p-10">
+            <CardHeader className="p-0 flex flex-row items-center justify-between mb-10">
+              <div>
+                <CardTitle className="text-xs font-black uppercase tracking-widest text-gray-400">Reparaciones por Categoría</CardTitle>
+                <CardDescription className="text-[10px] font-bold text-gray-500 uppercase mt-1">Distribución Operativa</CardDescription>
+              </div>
+              <div className="flex gap-2">
+                 {data.categoryData.map(c => (
+                   <div key={c.name} className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: c.color }}></div>
+                      <span className="text-[9px] font-black uppercase text-gray-400">{c.name}</span>
+                   </div>
+                 ))}
+              </div>
             </CardHeader>
-            <CardContent className="h-[350px]">
+            <CardContent className="h-[350px] w-full p-0">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.categoryData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2D3748" vertical={false} />
+                <BarChart data={data.categoryData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis 
                     dataKey="name" 
-                    stroke="#718096" 
-                    fontSize={12} 
-                    tickLine={false} 
                     axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 9, fontWeight: 'black', fill: '#94A3B8' }} 
+                    dy={15}
                   />
                   <YAxis 
-                    stroke="#718096" 
-                    fontSize={12} 
-                    tickLine={false} 
                     axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 9, fontWeight: 'black', fill: '#94A3B8' }} 
                   />
                   <Tooltip 
-                    cursor={{ fill: 'rgba(255,255,255,0.05)' }} 
-                    contentStyle={{ backgroundColor: '#1A202C', borderColor: '#2D3748', color: '#FFF' }}
+                    cursor={{ fill: '#F8FAFC' }}
+                    contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)', fontSize: '10px', fontWeight: 'black', padding: '15px' }}
                   />
-                  <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={50}>
+                  <Bar dataKey="value" radius={[15, 15, 0, 0]} barSize={40}>
                     {data.categoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -177,15 +183,20 @@ export function AdminDashboard() {
             </CardContent>
           </Card>
 
-          {/* Cash Closing / Payment Methods */}
-          <Card className="bg-[#16191E] border-white/5 shadow-2xl">
-            <CardHeader>
-              <CardTitle className="text-white font-black uppercase text-sm tracking-widest flex items-center gap-2">
-                Cierre de Caja Diario
+          {/* Cash Closing Widget */}
+          <Card className="bg-white rounded-[45px] shadow-2xl shadow-gray-200/50 border-none p-10 flex flex-col justify-between overflow-hidden relative group">
+            <div className="absolute top-0 right-0 p-8">
+               <Wallet className="w-20 h-20 text-gray-50 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
+            </div>
+            
+            <CardHeader className="p-0 mb-10 text-center">
+              <CardDescription className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Cierre de Caja Diario</CardDescription>
+              <CardTitle className="text-5xl font-black text-[#002D4C] tracking-tighter">
+                ${Object.values(data.cashClosing).reduce((a, b) => a + b, 0).toLocaleString()}
               </CardTitle>
-              <CardDescription className="text-white/40">Distribución de cobros realizados hoy</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            
+            <CardContent className="p-0 space-y-8">
               <PaymentMethodItem 
                 label="Efectivo" 
                 amount={data.cashClosing['Efectivo']} 
@@ -204,73 +215,66 @@ export function AdminDashboard() {
                 icon={<CreditCard className="text-[#FF4F00]" />}
                 total={data.revenue}
               />
-              
-              <div className="pt-6 border-t border-white/10">
-                <div className="flex justify-between items-end">
-                  <span className="text-[10px] uppercase font-bold text-white/40">Total Arqueo</span>
-                  <span className="text-3xl font-black text-[#FF4F00] tracking-tighter">
-                    ${Object.values(data.cashClosing).reduce((a, b) => a + b, 0).toLocaleString()}
-                  </span>
-                </div>
-              </div>
             </CardContent>
+            
+            <div className="mt-10">
+               <Button className="w-full bg-[#002D4C] text-white font-black uppercase text-[10px] tracking-widest rounded-2xl h-14 shadow-2xl shadow-blue-900/30 hover:scale-[1.02] transition-transform active:scale-95">
+                 Realizar Arqueo Completo
+               </Button>
+            </div>
           </Card>
         </div>
 
-        {/* Critical Inventory & Low Stock */}
-        <div className="mt-8">
-          <Card className="bg-[#16191E] border-white/5 shadow-2xl">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-white font-black uppercase text-sm tracking-widest flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-red-500" />
-                  Inventario Crítico
-                </CardTitle>
-              </div>
-              <Button size="sm" variant="ghost" className="text-[10px] font-bold text-[#FF4F00]">VER TODO EL KARDEX</Button>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {data.criticalStock.map(item => (
-                  <div key={item.id} className="bg-black/20 p-4 border border-white/10 rounded-xl flex justify-between items-center group hover:border-[#FF4F00] transition-colors">
-                    <div>
-                      <h4 className="font-bold text-sm">{item.nombre}</h4>
-                      <p className="text-[10px] text-white/40 font-mono">COSTO: ${item.precio_costo}</p>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant="destructive" className="bg-red-500/20 text-red-500 border-red-500/30 font-black animate-pulse">
-                        {item.stock} PIEZAS
-                      </Badge>
-                    </div>
+        {/* Inventory Section */}
+        <Card className="bg-white rounded-[45px] shadow-2xl shadow-gray-200/50 border-none p-10">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 mb-10">
+            <div>
+              <CardTitle className="text-xs font-black tracking-widest uppercase text-gray-800">Alertas de Inventario Crítico</CardTitle>
+              <CardDescription className="text-[10px] font-black text-red-500 uppercase mt-1 tracking-widest flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4" />
+                Detección de Stock Insuficiente
+              </CardDescription>
+            </div>
+            <Button size="sm" variant="ghost" className="text-[10px] font-black text-[#FF4F00] uppercase tracking-widest hover:bg-[#FF4F00]/5 rounded-xl px-4 py-2">Ver Kardex Completo</Button>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {data.criticalStock.map(item => (
+                <div key={item.id} className="bg-gray-50/50 p-8 border border-gray-100 rounded-[35px] flex justify-between items-center group hover:border-[#FF4F00] transition-all hover:bg-white hover:shadow-2xl">
+                  <div>
+                    <h4 className="font-black text-gray-800 uppercase text-[11px] tracking-tight">{item.nombre}</h4>
+                    <p className="text-[9px] text-gray-400 font-black uppercase mt-1 tracking-widest opacity-80">COSTO: ${item.precio_costo}</p>
                   </div>
-                ))}
-                {data.criticalStock.length === 0 && (
-                  <div className="col-span-full py-10 text-center opacity-30">
-                    <PackageSearch className="w-12 h-12 mx-auto mb-2" />
-                    <p className="text-xs font-bold uppercase tracking-widest">Sin alertas de suministro</p>
+                  <div className="text-right">
+                    <p className="text-4xl font-black text-[#002D4C] leading-none tracking-tighter group-hover:text-[#FF4F00] transition-colors">{item.stock}</p>
+                    <Badge variant="destructive" className="mt-2 bg-red-100 text-red-600 border-none text-[8px] font-black uppercase px-3 py-0.5 rounded-lg">Urgente</Badge>
                   </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
 
-function KPICard({ title, value, icon, trend, isPositive }: any) {
+function StatCard({ title, value, icon, trend, trendUp }: any) {
   return (
-    <Card className="bg-[#16191E] border-white/5 shadow-xl hover:translate-y-[-4px] transition-transform duration-300">
-      <CardContent className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div className="p-3 bg-white/5 rounded-xl">{icon}</div>
-          <span className={`text-[10px] font-bold px-2 py-1 rounded bg-white/5 ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+    <Card className="bg-white rounded-[45px] shadow-2xl shadow-gray-200/40 border-none p-10 hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden text-center md:text-left">
+      <CardContent className="p-0">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+          <div className="w-14 h-14 rounded-[22px] bg-gray-50 flex items-center justify-center shadow-inner group-hover:bg-[#FF4F00]/5 transition-colors">
+            {React.cloneElement(icon as React.ReactElement, { className: 'w-7 h-7' })}
+          </div>
+          <Badge variant="outline" className={`border-none rounded-xl text-[10px] font-black px-4 py-1.5 ${trendUp ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600 shadow-sm shadow-red-100'}`}>
             {trend}
-          </span>
+          </Badge>
         </div>
-        <CardDescription className="text-white/40 text-[10px] uppercase font-bold tracking-widest mb-1">{title}</CardDescription>
-        <CardTitle className="text-3xl font-black text-white tracking-tighter">{value}</CardTitle>
+        <div>
+          <CardDescription className="text-gray-300 text-[10px] font-black uppercase tracking-widest mb-1 group-hover:text-gray-400 transition-colors">{title}</CardDescription>
+          <CardTitle className="text-4xl font-black text-[#002D4C] tracking-tighter">{value}</CardTitle>
+        </div>
       </CardContent>
     </Card>
   );
@@ -279,17 +283,19 @@ function KPICard({ title, value, icon, trend, isPositive }: any) {
 function PaymentMethodItem({ label, amount, icon, total }: any) {
   const percentage = (amount / total) * 100;
   return (
-    <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          {React.cloneElement(icon as React.ReactElement, { className: 'w-4 h-4' })}
-          <span className="text-sm font-bold text-white/80">{label}</span>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center px-2">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-50">
+            {React.cloneElement(icon as React.ReactElement, { className: 'w-5 h-5 opacity-80' })}
+          </div>
+          <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{label}</span>
         </div>
-        <span className="text-sm font-mono font-bold">${amount.toLocaleString()}</span>
+        <span className="text-sm font-black text-gray-800 tracking-tighter">${amount.toLocaleString()}</span>
       </div>
-      <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+      <div className="w-full bg-gray-50 h-3 rounded-full overflow-hidden p-[2px] border border-gray-100 shadow-inner">
         <div 
-          className="h-full bg-[#FF4F00] rounded-full" 
+          className="h-full bg-[#FF4F00] rounded-full shadow-lg shadow-[#FF4F00]/30 transition-all duration-1000" 
           style={{ width: `${percentage}%` }}
         />
       </div>

@@ -119,22 +119,23 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
     }
   }
 
-  if (lastOrder) {
     return (
-      <div className="max-w-xl mx-auto p-8 text-center animate-in fade-in zoom-in duration-500">
-        <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
+      <div className="max-w-xl mx-auto p-10 text-center animate-in fade-in zoom-in duration-700">
+        <div className="bg-green-50 w-24 h-24 rounded-[30px] flex items-center justify-center mx-auto mb-8 text-green-500 shadow-inner">
           <CheckCircle2 className="w-12 h-12" />
         </div>
-        <h2 className="text-4xl font-black text-[#002D4C] mb-2 uppercase">¡Registro Exitoso!</h2>
-        <p className="text-gray-500 mb-8">La orden #{lastOrder.id.substring(0, 8).toUpperCase()} se ha guardado correctamente en la nube.</p>
+        <h2 className="text-4xl font-black text-[#002D4C] mb-4 uppercase tracking-tighter italic">¡Registro Exitoso!</h2>
+        <p className="text-gray-400 font-medium mb-10 text-sm leading-relaxed">
+          La orden <span className="text-[#FF4F00] font-black">#{lastOrder.id.substring(0, 8).toUpperCase()}</span> se ha procesado correctamente. El ticket se ha generado automáticamente.
+        </p>
         
         <div className="flex flex-col gap-4">
           <Button 
             onClick={() => handlePrint(lastOrder, lastOrder.values)}
-            className="h-16 text-xl bg-[#FF4F00] hover:bg-[#e64700] text-white font-bold"
+            className="h-16 text-xs bg-[#FF4F00] hover:bg-[#e64700] text-white font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-[#FF4F00]/20 transition-transform active:scale-95"
           >
-            <Printer className="mr-2 h-6 w-6" />
-            Reimprimir Ticket
+            <Printer className="mr-3 h-5 w-5" />
+            Reimprimir Comprobante
           </Button>
           <Button 
             variant="outline"
@@ -143,7 +144,7 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
               setLastOrder(null);
               if (onSuccess) onSuccess();
             }}
-            className="h-16 text-xl border-[#002855] text-[#002855] font-bold"
+            className="h-16 text-xs border-gray-100 bg-white text-[#002D4C] font-black uppercase tracking-widest rounded-2xl shadow-sm hover:bg-gray-50"
           >
             Nueva Recepción
           </Button>
@@ -152,50 +153,48 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
             onClick={() => {
               if (onBack) onBack();
             }}
-            className="text-gray-400 font-bold"
+            className="text-gray-300 font-black uppercase text-[10px] tracking-widest mt-4 hover:text-[#002D4C]"
           >
-            Volver al Dashboard
+            <ChevronLeft className="w-4 h-4 mr-2" />
+            Regresar al Dashboard
           </Button>
         </div>
       </div>
     );
-  }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="mb-6 flex items-center gap-4">
+    <div className="max-w-4xl mx-auto p-2 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="mb-10 flex items-center gap-6">
         {onBack && (
-          <Button variant="ghost" size="icon" onClick={onBack} className="text-[#002855]">
+          <Button variant="ghost" size="icon" onClick={onBack} className="text-gray-300 hover:text-[#002D4C] bg-gray-50 rounded-2xl w-12 h-12 shadow-sm">
             <ChevronLeft className="h-6 w-6" />
           </Button>
         )}
         <div>
-          <h2 className="text-3xl font-black text-[#002855] tracking-tight">Nueva Recepción</h2>
-          <p className="text-gray-500 text-sm">Registro de cliente y equipo para soporte técnico.</p>
+          <h2 className="text-4xl font-black text-[#002D4C] tracking-tighter uppercase italic">Nueva Recepción</h2>
+          <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Módulo de Ingreso Operativo GAMA</p>
         </div>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* Sección de Cliente */}
-            <Card className="border-t-4 border-t-[#FF6B35] shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-[#002855] flex items-center gap-2">
-                  <div className="w-2 h-6 bg-[#FF6B35] rounded-full" />
-                  Datos del Cliente
-                </CardTitle>
-                <CardDescription>Información de contacto del propietario.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                <div className="w-1.5 h-6 bg-[#FF4F00] rounded-full" />
+                <h3 className="text-xs font-black uppercase tracking-widest text-[#002D4C]">Datos del Cliente</h3>
+              </div>
+              
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="nombre"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nombre Completo</FormLabel>
+                      <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nombre Completo</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ej. Juan Pérez" {...field} />
+                        <Input placeholder="Ej. Juan Pérez" className="bg-gray-50 border-gray-100 rounded-2xl h-12 text-[11px] font-bold px-6 focus:bg-white transition-all shadow-sm" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -206,9 +205,9 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                   name="telefono"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Teléfono / WhatsApp</FormLabel>
+                      <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">WhatsApp / Tel</FormLabel>
                       <FormControl>
-                        <Input placeholder="10 dígitos" {...field} />
+                        <Input placeholder="10 dígitos" className="bg-gray-50 border-gray-100 rounded-2xl h-12 text-[11px] font-bold px-6 focus:bg-white transition-all shadow-sm" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -219,57 +218,42 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Correo Electrónico (Opcional)</FormLabel>
+                      <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Email (Opcional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="cliente@ejemplo.com" {...field} />
+                        <Input placeholder="cliente@gama.com" className="bg-gray-50 border-gray-100 rounded-2xl h-12 text-[11px] font-bold px-6 focus:bg-white transition-all shadow-sm" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="direccion"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Dirección</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Dirección del cliente" className="resize-none" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Sección de Equipo */}
-            <Card className="border-t-4 border-t-[#002855] shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-[#002855] flex items-center gap-2">
-                  <div className="w-2 h-6 bg-[#002855] rounded-full" />
-                  Datos del Equipo
-                </CardTitle>
-                <CardDescription>Detalles técnicos del dispositivo.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                <div className="w-1.5 h-6 bg-[#002D4C] rounded-full" />
+                <h3 className="text-xs font-black uppercase tracking-widest text-[#002D4C]">Datos del Equipo</h3>
+              </div>
+
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="tipo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo de Equipo</FormLabel>
+                      <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Categoría</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecciona el tipo" />
+                          <SelectTrigger className="bg-gray-50 border-gray-100 rounded-2xl h-12 text-[11px] font-black uppercase tracking-widest px-6 shadow-sm">
+                            <SelectValue placeholder="Selecciona..." />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Audio">Audio</SelectItem>
-                          <SelectItem value="Video">Video</SelectItem>
-                          <SelectItem value="Computación">Computación</SelectItem>
-                          <SelectItem value="Línea Blanca">Línea Blanca</SelectItem>
+                        <SelectContent className="rounded-2xl border-gray-100 shadow-2xl">
+                          <SelectItem value="Audio" className="text-[11px] font-bold uppercase py-3">Audio</SelectItem>
+                          <SelectItem value="Video" className="text-[11px] font-bold uppercase py-3">Video</SelectItem>
+                          <SelectItem value="Computación" className="text-[11px] font-bold uppercase py-3">Computación</SelectItem>
+                          <SelectItem value="Línea Blanca" className="text-[11px] font-bold uppercase py-3">Línea Blanca</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -282,9 +266,9 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                     name="marca"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Marca</FormLabel>
+                        <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Marca</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ej. Sony" {...field} />
+                          <Input placeholder="p. ej. LG" className="bg-gray-50 border-gray-100 rounded-2xl h-12 text-[11px] font-bold px-6 shadow-sm" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -295,65 +279,37 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                     name="modelo"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Modelo</FormLabel>
+                        <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Modelo</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ej. WH-1000XM4" {...field} />
+                          <Input placeholder="Modelo" className="bg-gray-50 border-gray-100 rounded-2xl h-12 text-[11px] font-bold px-6 shadow-sm" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-                <FormField
-                  control={form.control}
-                  name="serie"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>No. Serie</FormLabel>
-                      <FormControl>
-                        <Input placeholder="S/N" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="estadoFisico"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Estado Físico / Estética</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Rayones, golpes, falta de botones..." className="resize-none" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* Sección de Orden y Falla */}
-          <Card className="border-t-4 border-t-[#FF6B35] shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-[#002855] flex items-center gap-2">
-                <div className="w-2 h-6 bg-[#FF6B35] rounded-full" />
-                Diagnóstico Inicial y Promesa
-              </CardTitle>
-              <CardDescription>Motivo de ingreso y tiempos estimados.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+          <div className="space-y-8 bg-gray-50/50 p-8 rounded-[40px] border border-gray-100">
+            <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+              <div className="w-1.5 h-6 bg-[#FF4F00] rounded-full" />
+              <h3 className="text-xs font-black uppercase tracking-widest text-[#002D4C]">Diagnóstico de Ingreso</h3>
+            </div>
+
+            <div className="space-y-6">
               <FormField
                 control={form.control}
                 name="fallaReportada"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg font-bold">Falla Reportada</FormLabel>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Reporte Síntoma / Falla</FormLabel>
                     <FormControl>
                       <Textarea 
-                        placeholder="Descripción detallada del problema que reporta el cliente..." 
-                        className="min-h-[100px] text-lg border-2 focus:border-[#FF6B35]" 
+                        placeholder="Descripción detallada del problema..." 
+                        className="min-h-[120px] text-xs font-bold border-gray-100 bg-white rounded-3xl p-6 focus:border-[#FF4F00] shadow-sm italic placeholder:text-gray-200" 
                         {...field} 
                       />
                     </FormControl>
@@ -362,19 +318,23 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <FormField
                   control={form.control}
                   name="costoEstimado"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Costo Estimado ($)</FormLabel>
+                      <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Presupuesto ($)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          {...field} 
-                          onChange={(e) => field.onChange(Number(e.target.value))} 
-                        />
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-[#FF4F00]">$</span>
+                          <Input 
+                            type="number" 
+                            className="bg-white border-gray-100 rounded-2xl h-12 pl-8 text-xs font-black text-[#002D4C] shadow-sm"
+                            {...field} 
+                            onChange={(e) => field.onChange(Number(e.target.value))} 
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -385,13 +345,17 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                   name="anticipo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Anticipo ($)</FormLabel>
+                      <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Anticipo ($)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          {...field} 
-                          onChange={(e) => field.onChange(Number(e.target.value))} 
-                        />
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-green-500">$</span>
+                          <Input 
+                            type="number" 
+                            className="bg-white border-gray-100 rounded-2xl h-12 pl-8 text-xs font-black text-[#002D4C] shadow-sm"
+                            {...field} 
+                            onChange={(e) => field.onChange(Number(e.target.value))} 
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -402,23 +366,23 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                   name="fechaPromesa"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Fecha Promesa Entrega</FormLabel>
+                      <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Compromiso</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
                               variant={"outline"}
                               className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                "w-full h-12 px-6 rounded-2xl bg-white border-gray-100 text-[10px] font-black uppercase tracking-widest shadow-sm text-left flex justify-between items-center hover:bg-gray-50",
+                                !field.value && "text-gray-300"
                               )}
                             >
                               {field.value ? (
                                 format(field.value, "PPP", { locale: es })
                               ) : (
-                                <span>Seleccionar fecha</span>
+                                <span>Seleccionar...</span>
                               )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              <CalendarIcon className="h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
@@ -440,23 +404,23 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                   )}
                 />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           <Button 
             type="submit" 
             disabled={isSubmitting}
-            className="w-full h-16 text-xl font-black uppercase tracking-widest bg-[#002855] hover:bg-[#001d3d] text-white shadow-xl transition-all hover:scale-[1.01]"
+            className="w-full h-16 text-xs font-black uppercase tracking-[0.3em] bg-[#002D4C] hover:bg-blue-900 text-white shadow-2xl shadow-[#002D4C]/30 transition-all hover:scale-[1.01] active:scale-95 rounded-2xl"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                Procesando...
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Sincronizando con Servidor...
               </>
             ) : (
               <>
-                <CheckCircle2 className="mr-2 h-6 w-6" />
-                Registrar Ingreso de Equipo
+                <CheckCircle2 className="mr-2 h-5 w-5" />
+                Generar Orden de Servicio y Generar Ticket
               </>
             )}
           </Button>

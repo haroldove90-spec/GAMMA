@@ -11,7 +11,10 @@ import {
   MoreVertical,
   CheckCircle2,
   Package,
-  HardDrive
+  HardDrive,
+  LayoutDashboard,
+  ClipboardList,
+  AlertTriangle
 } from 'lucide-react';
 import { format, isPast, isToday, addDays } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -36,8 +39,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 // Tipos locales basados en el esquema
 type Status = 'Pendiente' | 'En Diagnóstico' | 'Esperando Refacción' | 'Listo para Entrega' | 'Entregado';
@@ -61,7 +64,7 @@ interface Order {
 const MOCK_ORDERS: Order[] = [
   {
     id: '1',
-    orderNumber: 'ORD-1024',
+    orderNumber: 'GMA-1024',
     customerName: 'Ricardo Mendez',
     phone: '5512345678',
     equipment: 'Smart TV Samsung 55"',
@@ -73,7 +76,7 @@ const MOCK_ORDERS: Order[] = [
   },
   {
     id: '2',
-    orderNumber: 'ORD-1025',
+    orderNumber: 'GMA-1025',
     customerName: 'Elena Guerrero',
     phone: '5587654321',
     equipment: 'MacBook Pro 14" M2',
@@ -85,7 +88,7 @@ const MOCK_ORDERS: Order[] = [
   },
   {
     id: '3',
-    orderNumber: 'ORD-1026',
+    orderNumber: 'GMA-1026',
     customerName: 'Audio Design S.A.',
     phone: '5555555555',
     equipment: 'Amplificador Marantz',
@@ -97,7 +100,7 @@ const MOCK_ORDERS: Order[] = [
   },
   {
     id: '4',
-    orderNumber: 'ORD-1027',
+    orderNumber: 'GMA-1027',
     customerName: 'Julian Ortega',
     phone: '5522334455',
     equipment: 'PS5 Digital Edition',
@@ -105,255 +108,228 @@ const MOCK_ORDERS: Order[] = [
     status: 'Listo para Entrega',
     falla: 'Mantenimiento preventivo y limpieza',
     fechaPromesa: addDays(new Date(), 1),
-    costo: 800,
-  },
-  {
-    id: '5',
-    orderNumber: 'ORD-1028',
-    customerName: 'Maria Casas',
-    phone: '5544332211',
-    equipment: 'Refrigerador LG Thin Q',
-    category: 'Línea Blanca',
-    status: 'Pendiente',
-    falla: 'No enfría correctamente la parte de arriba',
-    fechaPromesa: addDays(new Date(), 5),
-    costo: 0,
+    costo: 600,
   }
 ];
 
 export function WorkshopDashboard() {
-  const [orders, setOrders] = React.useState<Order[]>(MOCK_ORDERS);
-  const [filterCategory, setFilterCategory] = React.useState<string>('all');
-  const [searchTerm, setSearchTerm] = React.useState('');
+  const [orders] = React.useState<Order[]>(MOCK_ORDERS);
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
-  
-  // Filtrado en tiempo real
-  const filteredOrders = orders.filter(order => {
-    const matchesCategory = filterCategory === 'all' || order.category === filterCategory;
-    const matchesSearch = 
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.equipment.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const [searchTerm, setSearchTerm] = React.useState('');
 
-  const columns: Status[] = ['Pendiente', 'En Diagnóstico', 'Esperando Refacción', 'Listo para Entrega'];
-
-  const handleUpdateStatus = (id: string, newStatus: Status) => {
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o));
-    
-    if (newStatus === 'Listo para Entrega') {
-      const order = orders.find(o => o.id === id);
-      if (order) {
-        toast.success(`Orden ${order.orderNumber} marcada como Lista`);
-      }
-    }
-  };
+  const filteredOrders = orders.filter(o => 
+    o.customerName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    o.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    o.equipment.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const sendWhatsApp = (order: Order) => {
-    const message = `Hola ${order.customerName}, tu equipo ${order.equipment} ya está listo en GAMA. El costo final es $${order.costo}. ¡Te esperamos!`;
-    const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${order.phone}?text=${encodedMessage}`, '_blank');
+    const message = `Hola ${order.customerName}, le informamos que su equipo ${order.equipment} (${order.orderNumber}) en GAMA ya está listo para entrega. El costo final es de $${order.costo}.`;
+    const url = `https://wa.me/52${order.phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
   };
 
   return (
-    <div className="bg-[#f0f2f5] min-h-full p-4 md:p-8 font-sans">
-      {/* Header del Dashboard */}
-      <div className="max-w-[1600px] mx-auto mb-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+    <div className="bg-transparent min-h-screen text-gray-800 p-0 font-sans">
+      <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-right-6 duration-700">
+        {/* Simple Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-            <h2 className="text-3xl font-black text-[#002855] tracking-tight flex items-center gap-2">
-              <Wrench className="w-8 h-8 text-[#FF6B35]" />
-              Taller de Reparación
-            </h2>
-            <p className="text-gray-500 font-medium">Control operativo de flujo de trabajo GAMA.</p>
+            <h1 className="text-4xl font-black tracking-tighter uppercase flex items-center gap-3 text-[#002D4C]">
+              <Wrench className="w-10 h-10 text-[#FF4F00]" />
+              Control del Taller
+            </h1>
+            <p className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.2em] mt-1">Gestión Técnica Operativa</p>
           </div>
-          
-          <div className="flex flex-wrap gap-4 w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="relative flex-1 md:w-80">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input 
-                className="pl-10 bg-white border-gray-200" 
-                placeholder="Buscar cliente, orden o equipo..." 
+                placeholder="Buscar orden o equipo..." 
+                className="pl-12 bg-white border-none rounded-2xl h-12 shadow-xl shadow-gray-200/50"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger className="w-[180px] bg-white">
-                <Filter className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Categoría" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas las categorías</SelectItem>
-                <SelectItem value="Audio">Audio</SelectItem>
-                <SelectItem value="Video">Video</SelectItem>
-                <SelectItem value="Computación">Computación</SelectItem>
-                <SelectItem value="Línea Blanca">Línea Blanca</SelectItem>
-              </SelectContent>
-            </Select>
+            <Button variant="outline" className="h-12 w-12 rounded-2xl border-none bg-white shadow-xl shadow-gray-200/50">
+              <Filter className="w-4 h-4 text-gray-400" />
+            </Button>
           </div>
         </div>
-      </div>
 
-      {/* Kanban View */}
-      <div className="max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-start">
-        {columns.map(status => (
-          <div key={status} className="flex flex-col h-full min-h-[500px]">
-            <div className="flex items-center justify-between mb-4 px-2">
-              <div className="flex items-center gap-2">
-                <span className={cn(
-                  "w-3 h-3 rounded-full",
-                  status === 'Pendiente' && "bg-gray-400",
-                  status === 'En Diagnóstico' && "bg-blue-500",
-                  status === 'Esperando Refacción' && "bg-orange-500 animate-pulse",
-                  status === 'Listo para Entrega' && "bg-green-500"
-                )} />
-                <h3 className="font-bold text-[#002855] uppercase text-xs tracking-widest">{status}</h3>
-              </div>
-              <Badge variant="outline" className="bg-white/50 text-[#002855] border-none font-bold">
-                {filteredOrders.filter(o => o.status === status).length}
-              </Badge>
-            </div>
+        {/* Board View / Status Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <StatusColumn 
+            title="Pendientes" 
+            count={orders.filter(o => o.status === 'Pendiente').length} 
+            color="border-gray-200"
+            orders={filteredOrders.filter(o => o.status === 'Pendiente')}
+            onOrderClick={setSelectedOrder}
+          />
+          <StatusColumn 
+            title="En Diagnóstico" 
+            count={orders.filter(o => o.status === 'En Diagnóstico').length} 
+            color="border-blue-200"
+            orders={filteredOrders.filter(o => o.status === 'En Diagnóstico')}
+            onOrderClick={setSelectedOrder}
+          />
+          <StatusColumn 
+            title="Esperando Refacción" 
+            count={orders.filter(o => o.status === 'Esperando Refacción').length} 
+            color="border-orange-200"
+            orders={filteredOrders.filter(o => o.status === 'Esperando Refacción')}
+            onOrderClick={setSelectedOrder}
+          />
+          <StatusColumn 
+            title="Listo para Entrega" 
+            count={orders.filter(o => o.status === 'Listo para Entrega').length} 
+            color="border-green-200"
+            orders={filteredOrders.filter(o => o.status === 'Listo para Entrega')}
+            onOrderClick={setSelectedOrder}
+          />
+        </div>
 
-            <ScrollArea className="flex-1 bg-gray-200/50 rounded-xl p-3 border border-dashed border-gray-300">
-              <div className="space-y-4">
-                {filteredOrders
-                  .filter(order => order.status === status)
-                  .map(order => (
-                    <OrderCard 
-                      key={order.id} 
-                      order={order} 
-                      onClick={() => setSelectedOrder(order)} 
-                    />
-                  ))
-                }
-                {filteredOrders.filter(o => o.status === status).length === 0 && (
-                  <div className="text-center py-10 opacity-30 select-none">
-                    <p className="text-xs uppercase font-bold tracking-widest">Sin órdenes</p>
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-          </div>
-        ))}
-      </div>
-
-      {/* Modal de Actualización */}
-      {selectedOrder && (
-        <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
-          <DialogContent className="max-w-2xl bg-[#f8f9fa] border-none shadow-2xl p-0 overflow-hidden">
-            <div className="bg-[#002855] p-6 text-white text-sm uppercase tracking-[0.2em] font-bold">
-               Control de Orden: {selectedOrder.orderNumber}
-            </div>
-            
-            <div className="p-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-gray-400 block mb-2">Equipo / Categoría</label>
-                  <p className="text-xl font-black text-[#002855] leading-tight">{selectedOrder.equipment}</p>
-                  <Badge className="mt-2 bg-blue-100 text-blue-700 hover:bg-blue-100 border-none">
-                    {selectedOrder.category}
-                  </Badge>
-                </div>
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-gray-400 block mb-2">Cliente</label>
-                  <div className="flex items-center gap-2">
-                    <User className="w-5 h-5 text-[#FF6B35]" />
-                    <p className="text-lg font-bold text-[#002855]">{selectedOrder.customerName}</p>
-                  </div>
-                  <p className="text-sm font-mono text-blue-500 mt-1">WA: {selectedOrder.phone}</p>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#002855] mb-2 block">Actualizar Estatus</label>
-                  <Select 
-                    defaultValue={selectedOrder.status}
-                    onValueChange={(val) => handleUpdateStatus(selectedOrder.id, val as Status)}
-                  >
-                    <SelectTrigger className="w-full h-12 bg-white border-2 focus:ring-[#FF6B35]">
-                      <SelectValue placeholder="Seleccionar nuevo estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Pendiente">Pendiente</SelectItem>
-                      <SelectItem value="En Diagnóstico">En Diagnóstico</SelectItem>
-                      <SelectItem value="Esperando Refacción">Esperando Refacción</SelectItem>
-                      <SelectItem value="Listo para Entrega">Listo para Entrega</SelectItem>
-                      <SelectItem value="Entregado">Entregado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#002855] mb-2 block">Bitácora Técnica</label>
-                  <Textarea 
-                    placeholder="Escribe aquí el avance del diagnóstico o notas sobre las reparaciones realizadas..." 
-                    className="min-h-[120px] bg-white border-2" 
-                    defaultValue={selectedOrder.diagnostico}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-6">
+        {/* Modal de Detalle */}
+        <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
+          {selectedOrder && (
+            <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white rounded-[40px] border-none shadow-2xl">
+              <div className="grid grid-cols-1 md:grid-cols-3">
+                {/* Left Panel: Info */}
+                <div className="p-10 bg-[#002D4C] text-white space-y-8">
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#002855] mb-2 block">Refacciones Usadas</label>
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" className="w-full bg-white border-dashed border-2 hover:border-[#FF6B35] group">
-                        <Package className="w-4 h-4 mr-2 group-hover:text-[#FF6B35]" />
-                        Vincular Pieza
-                      </Button>
+                    <Badge className="bg-[#FF4F00] text-white border-none text-[9px] font-black uppercase px-3 py-0.5 rounded-lg mb-4">
+                      {selectedOrder.status}
+                    </Badge>
+                    <h2 className="text-3xl font-black tracking-tighter leading-none mb-2">{selectedOrder.orderNumber}</h2>
+                    <p className="text-xs font-bold text-white/50 uppercase tracking-widest">Registrado: 23 Abr 2024</p>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-4 border-b border-white/5 pb-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center">
+                        <User className="w-4 h-4 text-[#FF4F00]" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">Cliente</p>
+                        <p className="text-[11px] font-bold">{selectedOrder.customerName}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 border-b border-white/5 pb-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center">
+                        <HardDrive className="w-4 h-4 text-[#FF4F00]" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">Equipo</p>
+                        <p className="text-[11px] font-bold">{selectedOrder.equipment}</p>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <label className="text-[10px] uppercase font-bold text-[#002855] mb-2 block">Costo Final de Reparación</label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-gray-400">$</span>
-                      <Input 
-                        type="number" 
-                        defaultValue={selectedOrder.costo} 
-                        className="pl-8 bg-white border-2 text-lg font-bold" 
+
+                  <div className="bg-red-500/10 border border-red-500/20 p-5 rounded-3xl">
+                     <p className="text-[9px] font-black text-red-400 uppercase tracking-widest flex items-center gap-2 mb-2">
+                       <AlertTriangle className="w-3 h-3" />
+                       Falla Reportada
+                     </p>
+                     <p className="text-[10px] font-bold text-red-200 italic">"{selectedOrder.falla}"</p>
+                  </div>
+                </div>
+
+                {/* Right Panel: Actions */}
+                <div className="md:col-span-2 p-10 space-y-8">
+                  <DialogHeader className="p-0 space-y-0">
+                    <DialogTitle className="text-xl font-black uppercase tracking-tight text-[#002D4C]">Bitácora Técnica</DialogTitle>
+                    <DialogDescription className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Actualización de diagnóstico y progreso</DialogDescription>
+                  </DialogHeader>
+
+                  <div className="space-y-6">
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-gray-400 mb-3 block tracking-widest">Diagnóstico Técnico</label>
+                      <Textarea 
+                        placeholder="Describe el problema técnico detectado..." 
+                        className="bg-gray-50 border-gray-100 rounded-3xl min-h-[120px] p-6 text-[11px] font-medium placeholder:text-gray-300 focus:bg-white transition-all outline-none"
                       />
                     </div>
+
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <label className="text-[10px] font-black uppercase text-gray-400 mb-3 block tracking-widest">Cambiar Estado</label>
+                        <Select defaultValue={selectedOrder.status}>
+                          <SelectTrigger className="bg-gray-50 border-gray-100 rounded-2xl h-12 text-[11px] font-black uppercase tracking-wide">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Pendiente">Pendiente</SelectItem>
+                            <SelectItem value="En Diagnóstico">En Diagnóstico</SelectItem>
+                            <SelectItem value="Esperando Refacción">Esperando Refacción</SelectItem>
+                            <SelectItem value="Listo para Entrega">Listo para Entrega</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-black uppercase text-gray-400 mb-3 block tracking-widest">Costo Estimado</label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-[#FF4F00]">$</span>
+                          <Input 
+                            type="number" 
+                            defaultValue={selectedOrder.costo} 
+                            className="bg-gray-50 border-gray-100 rounded-2xl h-12 pl-8 font-black text-gray-800"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
+
+                  <DialogFooter className="pt-8 border-t border-gray-50 flex items-center justify-between mt-auto">
+                    <div className="flex gap-4">
+                      <Button 
+                        variant="secondary"
+                        className="bg-green-500 hover:bg-green-600 text-white font-black uppercase text-[9px] tracking-widest px-6 h-12 rounded-2xl shadow-xl shadow-green-500/20"
+                        onClick={() => sendWhatsApp(selectedOrder)}
+                      >
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        Notificar WA
+                      </Button>
+                    </div>
+                    <Button 
+                      className="bg-[#002D4C] hover:bg-blue-900 text-white font-black uppercase text-[10px] tracking-widest h-14 px-10 rounded-2xl shadow-xl shadow-blue-900/20 transition-transform active:scale-95"
+                      onClick={() => {
+                        toast.success('Información guardada exitosamente');
+                        setSelectedOrder(null);
+                      }}
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      Guardar Bitácora
+                    </Button>
+                  </DialogFooter>
                 </div>
               </div>
-            </div>
-
-            <DialogFooter className="p-6 bg-gray-100/50 flex items-center justify-between border-t">
-              <div className="flex gap-3">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setSelectedOrder(null)}
-                  className="font-bold text-[#002855]"
-                >
-                  Cancelar
-                </Button>
-                {selectedOrder.status === 'Listo para Entrega' && (
-                  <Button 
-                    variant="secondary"
-                    className="bg-[#25D366] hover:bg-[#128C7E] text-white font-bold gap-2"
-                    onClick={() => sendWhatsApp(selectedOrder)}
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    Notificar Cliente
-                  </Button>
-                )}
-              </div>
-              <Button 
-                onClick={() => {
-                  toast.success('Información actualizada correctamente');
-                  setSelectedOrder(null);
-                }}
-                className="bg-[#FF6B35] hover:bg-[#e85a2a] text-white font-black uppercase tracking-widest px-8"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Guardar Cambios
-              </Button>
-            </DialogFooter>
-          </DialogContent>
+            </DialogContent>
+          )}
         </Dialog>
-      )}
+      </div>
+    </div>
+  );
+}
+
+function StatusColumn({ title, count, color, orders, onOrderClick }: any) {
+  return (
+    <div className="space-y-6">
+      <div className={cn("pb-4 border-b-2 flex justify-between items-center px-2", color)}>
+        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#002D4C]">{title}</h3>
+        <span className="bg-[#002D4C] text-white text-[9px] font-black px-3 py-1 rounded-full">{count}</span>
+      </div>
+      <div className="space-y-4">
+        {orders.map((order: any) => (
+          <OrderCard key={order.id} order={order} onClick={() => onOrderClick(order)} />
+        ))}
+        {orders.length === 0 && (
+          <div className="p-10 border-2 border-dashed border-gray-100 rounded-[35px] flex flex-col items-center justify-center text-center opacity-30">
+             <CheckCircle2 className="w-8 h-8 text-gray-300 mb-3" />
+             <p className="text-[9px] font-black uppercase tracking-widest">Sin Pendientes</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -364,56 +340,48 @@ function OrderCard({ order, onClick }: { order: Order; onClick: () => void }) {
 
   return (
     <Card 
-      className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-none bg-white overflow-hidden relative"
+      className="bg-white rounded-[35px] shadow-xl shadow-gray-200/50 border-none transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl cursor-pointer group p-2"
       onClick={onClick}
     >
-      <div className={cn(
-        "absolute left-0 top-0 bottom-0 w-1.5",
-        order.status === 'Pendiente' && "bg-gray-300",
-        order.status === 'En Diagnóstico' && "bg-blue-500",
-        order.status === 'Esperando Refacción' && "bg-orange-500",
-        order.status === 'Listo para Entrega' && "bg-green-500"
-      )} />
-      
-      <CardContent className="p-4 pl-6">
-        <div className="flex justify-between items-start mb-3">
-          <span className="text-[10px] font-mono text-gray-400 font-bold tracking-tighter">{order.orderNumber}</span>
-          {isExpired && (
-            <Badge className="bg-red-500 text-[9px] uppercase font-black border-none animate-pulse">VENCIDO</Badge>
-          )}
-          {isUrgent && (
-            <Badge className="bg-orange-500 text-[9px] uppercase font-black border-none">ENTREGA HOY</Badge>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <h4 className="text-sm font-black text-[#002855] leading-tight uppercase group-hover:text-[#FF6B35] transition-colors">{order.equipment}</h4>
-          <div className="flex items-center gap-1.5 mt-1 opacity-60">
-            <User className="w-3 h-3" />
-            <p className="text-[11px] font-medium truncate">{order.customerName}</p>
+      <CardContent className="p-6 relative overflow-hidden">
+        <div className="flex justify-between items-start mb-6">
+          <span className="text-[9px] font-black text-gray-300 tracking-widest">{order.orderNumber}</span>
+          <div className="flex gap-1.5">
+            {isExpired && (
+              <div className="bg-red-100 text-red-500 p-1.5 rounded-lg">
+                <AlertTriangle className="w-3 h-3" />
+              </div>
+            )}
+            {order.status === 'Listo para Entrega' && (
+              <div className="bg-green-100 text-green-500 p-1.5 rounded-lg">
+                <CheckCircle2 className="w-3 h-3" />
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-          <div className="flex items-center gap-1.5 text-gray-400">
+        <div className="mb-6">
+          <h4 className="text-sm font-black text-[#002D4C] uppercase leading-tight tracking-tight mb-2 group-hover:text-[#FF4F00] transition-colors line-clamp-2">
+            {order.equipment}
+          </h4>
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
+              <User className="w-2 h-2 text-gray-400" />
+            </div>
+            <p className="text-[10px] font-bold text-gray-400 truncate">{order.customerName}</p>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center pt-5 border-t border-gray-50">
+          <div className="flex items-center gap-2 text-gray-300">
             <Clock className="w-3 h-3" />
-            <span className="text-[10px] font-bold">
+            <span className="text-[9px] font-black">
               {order.fechaPromesa ? format(order.fechaPromesa, 'dd MMM', { locale: es }) : 'N/A'}
             </span>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <MoreVertical className="w-4 h-4 text-gray-400" />
-          </Button>
+          <p className="text-sm font-black text-[#002D4C] leading-none tracking-tighter">${order.costo}</p>
         </div>
       </CardContent>
     </Card>
   );
-}
-
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ');
 }
