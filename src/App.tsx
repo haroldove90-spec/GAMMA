@@ -13,53 +13,72 @@ type AppView = 'dashboard' | 'reception' | 'workshop' | 'admin';
 
 export default function App() {
   const [view, setView] = useState<AppView>('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const closeSidebar = () => setIsSidebarOpen(false);
 
   return (
-    <div className="bg-[#E9EDF1] text-[#2D3748] font-sans min-h-screen flex overflow-hidden">
+    <div className="bg-[#E9EDF1] text-[#2D3748] font-sans min-h-screen flex overflow-hidden relative">
       <Toaster position="top-right" richColors />
       <InstallPrompt />
       
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden backdrop-blur-sm animate-in fade-in duration-300" 
+          onClick={closeSidebar}
+        />
+      )}
+
       {/* Sidebar - Gama Navy #002B45 */}
-      <aside className="w-68 bg-[#002B45] flex flex-col shadow-2xl z-20 shrink-0">
-        <div className="p-8 flex items-center gap-3">
-          <div className="bg-white p-2 rounded-xl shadow-inner">
-            <img 
-              src="https://cossma.com.mx/gama.png" 
-              alt="Gama Logo" 
-              className="h-8 w-auto"
-            />
+      <aside className={cn(
+        "fixed inset-y-0 left-0 lg:static w-72 bg-[#002B45] flex flex-col shadow-2xl z-40 shrink-0 transition-transform duration-300 lg:translate-x-0",
+        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        <div className="p-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-white p-2 rounded-xl shadow-inner">
+              <img 
+                src="https://cossma.com.mx/gama.png" 
+                alt="Gama Logo" 
+                className="h-8 w-auto"
+              />
+            </div>
+            <div>
+              <h1 className="text-xl font-black tracking-tighter text-white italic leading-none">GAMA</h1>
+              <p className="text-[7px] uppercase font-bold text-[#FF4F00] tracking-widest mt-1">REPAIR CENTER</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-black tracking-tighter text-white italic leading-none">GAMA</h1>
-            <p className="text-[7px] uppercase font-bold text-[#FF4F00] tracking-widest mt-1">REPAIR CENTER</p>
-          </div>
+          <button onClick={closeSidebar} className="lg:hidden text-white/50 hover:text-white">
+             <ChevronLeft className="w-6 h-6" />
+          </button>
         </div>
 
         <nav className="flex-1 px-4 mt-6 space-y-2">
           <SidebarItem 
             active={view === 'dashboard'} 
-            onClick={() => setView('dashboard')} 
+            onClick={() => { setView('dashboard'); closeSidebar(); }} 
             icon={<LayoutDashboard className="w-5 h-5" />}
             label="Dashboard"
           />
           <SidebarItem 
             active={view === 'admin'} 
-            onClick={() => setView('admin')} 
+            onClick={() => { setView('admin'); closeSidebar(); }} 
             icon={<BarChart3 className="w-5 h-5" />}
             label="Estadísticas"
             badge="2"
           />
           <SidebarItem 
             active={view === 'workshop'} 
-            onClick={() => setView('workshop')} 
+            onClick={() => { setView('workshop'); closeSidebar(); }} 
             icon={<Wrench className="w-5 h-5" />}
             label="Taller"
           />
           <SidebarItem 
             active={view === 'reception'} 
-            onClick={() => setView('reception')} 
+            onClick={() => { setView('reception'); closeSidebar(); }} 
             icon={<ClipboardList className="w-5 h-5" />}
-            label="Formularios"
+            label="Recepcion"
           />
         </nav>
 
@@ -77,31 +96,37 @@ export default function App() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
         {/* Top Header */}
-        <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 shrink-0 shadow-sm z-10">
+        <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-6 lg:px-10 shrink-0 shadow-sm z-10">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-gray-400 text-[10px] font-black uppercase tracking-widest">
-              <Layout className="w-4 h-4" />
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors text-[#002B45]"
+            >
+              <LayoutDashboard className="w-6 h-6" />
+            </button>
+            <div className="flex items-center gap-2 text-gray-400 text-[10px] font-black uppercase tracking-widest overflow-hidden">
+              <Layout className="w-4 h-4 shrink-0" />
               <span>/</span>
-              <span className="text-gray-700">{view}</span>
+              <span className="text-gray-700 truncate">{view}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-8">
-            <div className="relative group">
+          <div className="flex items-center gap-4 lg:gap-8">
+            <div className="relative group hidden sm:block">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 group-focus-within:text-[#FF4F00] transition-colors" />
               <input 
                 type="text" 
-                placeholder="Buscar por folio o cliente..." 
-                className="bg-[#F8FAFC] border border-gray-100 rounded-xl pl-12 pr-6 py-2.5 text-xs w-80 focus:ring-1 focus:ring-[#FF4F00]/30 focus:bg-white transition-all outline-none font-medium text-gray-600"
+                placeholder="Buscar..." 
+                className="bg-[#F8FAFC] border border-gray-100 rounded-xl pl-12 pr-6 py-2.5 text-xs w-48 lg:w-80 focus:ring-1 focus:ring-[#FF4F00]/30 focus:bg-white transition-all outline-none font-medium text-gray-600"
               />
             </div>
             
-            <div className="flex items-center gap-4 border-l border-gray-100 pl-8">
-              <div className="text-right">
+            <div className="flex items-center gap-3 lg:gap-4 lg:border-l lg:border-gray-100 lg:pl-8">
+              <div className="text-right hidden md:block">
                 <p className="text-[10px] font-black uppercase text-gray-800 leading-tight tracking-tighter">Administrador</p>
                 <p className="text-[8px] font-bold text-[#FF4F00] uppercase tracking-widest">Gama Pro</p>
               </div>
-              <div className="w-10 h-10 rounded-2xl bg-[#002D4C] flex items-center justify-center text-white font-black text-xs shadow-lg shadow-[#002D4C]/20 border border-white/10">
+              <div className="w-10 h-10 rounded-2xl bg-[#002D4C] flex items-center justify-center text-white font-black text-xs shadow-lg shadow-[#002D4C]/20 border border-white/10 shrink-0">
                 G1
               </div>
             </div>
@@ -109,11 +134,11 @@ export default function App() {
         </header>
 
         {/* Content Scroll Area */}
-        <div className="flex-1 overflow-y-auto p-10 bg-[#E9EDF1]">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-10 bg-[#E9EDF1]">
           {view === 'dashboard' && (
-            <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-10 max-w-7xl mx-auto">
+            <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-6 lg:space-y-10 max-w-7xl mx-auto">
               {/* Widgets Summary */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                 <WidgetCard label="Ventas Mensuales" value="$84.2k" color="text-[#FF4F00]" trend="up" />
                 <WidgetCard label="Órdenes Activas" value="156" color="text-[#002D4C]" trend="up" />
                 <WidgetCard label="Diagnósticos" value="28" color="text-[#002D4C]" trend="down" />
@@ -121,39 +146,41 @@ export default function App() {
               </div>
 
               {/* Main Content Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10">
                 {/* Table Widget */}
-                <div className="lg:col-span-2 bg-white rounded-[40px] shadow-xl shadow-gray-200/50 border border-white overflow-hidden">
-                  <div className="p-10 border-b border-gray-50 flex justify-between items-center bg-white">
+                <div className="lg:col-span-2 bg-white rounded-[30px] lg:rounded-[40px] shadow-xl shadow-gray-200/50 border border-white overflow-hidden">
+                  <div className="p-6 lg:p-10 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white">
                     <div>
                       <h3 className="font-black text-gray-800 uppercase text-xs tracking-[0.2em]">Registro de Actividad</h3>
                       <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Últimas 24 horas</p>
                     </div>
                     <button 
                       onClick={() => setView('reception')}
-                      className="bg-[#FF4F00] text-white text-[10px] px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-[#E64700] transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[#FF4F00]/30"
+                      className="w-full sm:w-auto bg-[#FF4F00] text-white text-[10px] px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-[#E64700] transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[#FF4F00]/30"
                     >
                       Nueva Orden +
                     </button>
                   </div>
                   
-                  <div className="divide-y divide-gray-50">
-                    <div className="grid grid-cols-6 p-5 bg-gray-50/50 text-[9px] font-black uppercase tracking-widest text-gray-400 px-10">
-                      <div>Folio</div>
-                      <div className="col-span-2">Equipo</div>
-                      <div className="col-span-2">Cliente</div>
-                      <div className="text-right">Estado</div>
+                  <div className="overflow-x-auto">
+                    <div className="min-w-[600px] divide-y divide-gray-50">
+                      <div className="grid grid-cols-6 p-5 bg-gray-50/50 text-[9px] font-black uppercase tracking-widest text-gray-400 px-10">
+                        <div>Folio</div>
+                        <div className="col-span-2">Equipo</div>
+                        <div className="col-span-2">Cliente</div>
+                        <div className="text-right">Estado</div>
+                      </div>
+                      <OrderRowUI id="GMA-001" eq="TV Samsung 55" cl="M. Lopez" ph="55 12..34" st="En Proceso" />
+                      <OrderRowUI id="GMA-002" eq="MacBook Pro" cl="R. Mendez" ph="55 56..78" st="Pendiente" />
+                      <OrderRowUI id="GMA-003" eq="PS5 Slim" cl="C. Ortiz" ph="55 99..00" st="Listo" />
+                      <OrderRowUI id="GMA-004" eq="Xbox Series X" cl="L. Diaz" ph="55 44..55" st="Entregado" />
                     </div>
-                    <OrderRowUI id="GMA-001" eq="TV Samsung 55" cl="M. Lopez" ph="55 12..34" st="En Proceso" />
-                    <OrderRowUI id="GMA-002" eq="MacBook Pro" cl="R. Mendez" ph="55 56..78" st="Pendiente" />
-                    <OrderRowUI id="GMA-003" eq="PS5 Slim" cl="C. Ortiz" ph="55 99..00" st="Listo" />
-                    <OrderRowUI id="GMA-004" eq="Xbox Series X" cl="L. Diaz" ph="55 44..55" st="Entregado" />
                   </div>
                 </div>
 
                 {/* Secondary Widgets Column */}
-                <div className="space-y-8">
-                  <div className="bg-white rounded-[40px] p-10 shadow-xl shadow-gray-200/50 border border-white">
+                <div className="space-y-6 lg:space-y-8">
+                  <div className="bg-white rounded-[30px] lg:rounded-[40px] p-6 lg:p-10 shadow-xl shadow-gray-200/50 border border-white">
                     <h3 className="font-black text-xs uppercase tracking-widest mb-8 text-gray-800">Alertas de Stock</h3>
                     <div className="space-y-6">
                        <ProgressItem name="Componentes Audio" percent={15} color="bg-red-500" value="02" />
@@ -162,7 +189,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="bg-[#002D4C] rounded-[40px] p-10 shadow-2xl text-white relative overflow-hidden group border border-white/5">
+                  <div className="bg-[#002D4C] rounded-[30px] lg:rounded-[40px] p-8 lg:p-10 shadow-2xl text-white relative overflow-hidden group border border-white/5">
                     <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-[#FF4F00]/20 rounded-full blur-3xl group-hover:bg-[#FF4F00]/30 transition-colors duration-700"></div>
                     <h3 className="text-[10px] font-black uppercase tracking-widest mb-2 text-[#FF4F00]">Status Operativo</h3>
                     <p className="text-2xl font-black tracking-tight leading-tight mb-6">Eficiencia del<br/>Taller: 94%</p>
@@ -189,7 +216,7 @@ export default function App() {
           )}
 
           {view === 'reception' && (
-            <main className="bg-white rounded-[40px] shadow-2xl p-10 border border-white animate-in fade-in zoom-in duration-500 max-w-4xl mx-auto">
+            <main className="bg-white rounded-[30px] lg:rounded-[40px] shadow-2xl p-6 lg:p-10 border border-white animate-in fade-in zoom-in duration-500 max-w-4xl mx-auto">
               <ReceptionForm 
                 onBack={() => setView('dashboard')} 
                 onSuccess={() => setView('dashboard')} 

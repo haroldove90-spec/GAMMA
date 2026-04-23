@@ -104,7 +104,7 @@ export function AdminDashboard() {
         </div>
 
         {/* Primary Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard 
             title="Ingresos Totales" 
             value={`$${data.revenue.toLocaleString()}`} 
@@ -138,13 +138,13 @@ export function AdminDashboard() {
         {/* Middle Section: Visualization & Cash Closing */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Chart Card */}
-          <Card className="lg:col-span-2 bg-white rounded-[45px] shadow-2xl shadow-gray-200/50 border-none p-10">
-            <CardHeader className="p-0 flex flex-row items-center justify-between mb-10">
+          <Card className="lg:col-span-2 bg-white rounded-[45px] shadow-2xl shadow-gray-200/50 border-none p-6 lg:p-10">
+            <CardHeader className="p-0 flex flex-col sm:flex-row items-center justify-between mb-10 gap-4">
               <div>
                 <CardTitle className="text-xs font-black uppercase tracking-widest text-gray-400">Reparaciones por Categoría</CardTitle>
                 <CardDescription className="text-[10px] font-bold text-gray-500 uppercase mt-1">Distribución Operativa</CardDescription>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2 justify-center">
                  {data.categoryData.map(c => (
                    <div key={c.name} className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100">
                       <div className="w-2 h-2 rounded-full" style={{ backgroundColor: c.color }}></div>
@@ -184,15 +184,15 @@ export function AdminDashboard() {
           </Card>
 
           {/* Cash Closing Widget */}
-          <Card className="bg-white rounded-[45px] shadow-2xl shadow-gray-200/50 border-none p-10 flex flex-col justify-between overflow-hidden relative group">
+          <Card className="bg-white rounded-[45px] shadow-2xl shadow-gray-200/50 border-none p-6 lg:p-10 flex flex-col justify-between overflow-hidden relative group">
             <div className="absolute top-0 right-0 p-8">
-               <Wallet className="w-20 h-20 text-gray-50 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
+               <Wallet className="w-16 h-16 lg:w-20 lg:h-20 text-gray-50 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
             </div>
             
             <CardHeader className="p-0 mb-10 text-center">
               <CardDescription className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Cierre de Caja Diario</CardDescription>
-              <CardTitle className="text-5xl font-black text-[#002D4C] tracking-tighter">
-                ${Object.values(data.cashClosing).reduce((a, b) => a + b, 0).toLocaleString()}
+              <CardTitle className="text-4xl lg:text-5xl font-black text-[#002D4C] tracking-tighter">
+                ${Object.values(data.cashClosing).reduce((a: number, b: any) => a + (Number(b) || 0), 0).toLocaleString()}
               </CardTitle>
             </CardHeader>
             
@@ -226,16 +226,16 @@ export function AdminDashboard() {
         </div>
 
         {/* Inventory Section */}
-        <Card className="bg-white rounded-[45px] shadow-2xl shadow-gray-200/50 border-none p-10">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 mb-10">
-            <div>
+        <Card className="bg-white rounded-[45px] shadow-2xl shadow-gray-200/50 border-none p-6 lg:p-10">
+          <CardHeader className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 p-0 mb-10">
+            <div className="text-center sm:text-left">
               <CardTitle className="text-xs font-black tracking-widest uppercase text-gray-800">Alertas de Inventario Crítico</CardTitle>
-              <CardDescription className="text-[10px] font-black text-red-500 uppercase mt-1 tracking-widest flex items-center gap-1.5">
+              <CardDescription className="text-[10px] font-black text-red-500 uppercase mt-1 tracking-widest flex items-center justify-center sm:justify-start gap-1.5">
                 <AlertTriangle className="w-4 h-4" />
                 Detección de Stock Insuficiente
               </CardDescription>
             </div>
-            <Button size="sm" variant="ghost" className="text-[10px] font-black text-[#FF4F00] uppercase tracking-widest hover:bg-[#FF4F00]/5 rounded-xl px-4 py-2">Ver Kardex Completo</Button>
+            <Button size="sm" variant="ghost" className="text-[10px] font-black text-[#FF4F00] uppercase tracking-widest hover:bg-[#FF4F00]/5 rounded-xl px-4 py-2 w-full sm:w-auto">Ver Kardex Completo</Button>
           </CardHeader>
           <CardContent className="p-0">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -261,7 +261,7 @@ export function AdminDashboard() {
 
 function StatCard({ title, value, icon, trend, trendUp }: any) {
   return (
-    <Card className="bg-white rounded-[45px] shadow-2xl shadow-gray-200/40 border-none p-10 hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden text-center md:text-left">
+    <Card className="bg-white rounded-[45px] shadow-2xl shadow-gray-200/40 border-none p-6 lg:p-10 hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden text-center md:text-left">
       <CardContent className="p-0">
         <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
           <div className="w-14 h-14 rounded-[22px] bg-gray-50 flex items-center justify-center shadow-inner group-hover:bg-[#FF4F00]/5 transition-colors">

@@ -159,7 +159,7 @@ export function WorkshopDashboard() {
         </div>
 
         {/* Board View / Status Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
           <StatusColumn 
             title="Pendientes" 
             count={orders.filter(o => o.status === 'Pendiente').length} 
@@ -196,7 +196,7 @@ export function WorkshopDashboard() {
             <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white rounded-[40px] border-none shadow-2xl">
               <div className="grid grid-cols-1 md:grid-cols-3">
                 {/* Left Panel: Info */}
-                <div className="p-10 bg-[#002D4C] text-white space-y-8">
+                <div className="p-6 lg:p-10 bg-[#002D4C] text-white space-y-8">
                   <div>
                     <Badge className="bg-[#FF4F00] text-white border-none text-[9px] font-black uppercase px-3 py-0.5 rounded-lg mb-4">
                       {selectedOrder.status}
@@ -236,7 +236,7 @@ export function WorkshopDashboard() {
                 </div>
 
                 {/* Right Panel: Actions */}
-                <div className="md:col-span-2 p-10 space-y-8">
+                <div className="md:col-span-2 p-6 lg:p-10 space-y-8">
                   <DialogHeader className="p-0 space-y-0">
                     <DialogTitle className="text-xl font-black uppercase tracking-tight text-[#002D4C]">Bitácora Técnica</DialogTitle>
                     <DialogDescription className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Actualización de diagnóstico y progreso</DialogDescription>
@@ -280,19 +280,19 @@ export function WorkshopDashboard() {
                     </div>
                   </div>
 
-                  <DialogFooter className="pt-8 border-t border-gray-50 flex items-center justify-between mt-auto">
-                    <div className="flex gap-4">
+                  <DialogFooter className="pt-8 border-t border-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
+                    <div className="flex gap-4 w-full sm:w-auto">
                       <Button 
                         variant="secondary"
-                        className="bg-green-500 hover:bg-green-600 text-white font-black uppercase text-[9px] tracking-widest px-6 h-12 rounded-2xl shadow-xl shadow-green-500/20"
+                        className="bg-green-500 hover:bg-green-600 text-white font-black uppercase text-[9px] tracking-widest px-6 h-12 rounded-2xl shadow-xl shadow-green-500/20 flex-1 sm:flex-none"
                         onClick={() => sendWhatsApp(selectedOrder)}
                       >
                         <MessageCircle className="w-4 h-4 mr-2" />
-                        Notificar WA
+                        WA
                       </Button>
                     </div>
                     <Button 
-                      className="bg-[#002D4C] hover:bg-blue-900 text-white font-black uppercase text-[10px] tracking-widest h-14 px-10 rounded-2xl shadow-xl shadow-blue-900/20 transition-transform active:scale-95"
+                      className="w-full sm:w-auto bg-[#002D4C] hover:bg-blue-900 text-white font-black uppercase text-[10px] tracking-widest h-14 px-10 rounded-2xl shadow-xl shadow-blue-900/20 transition-transform active:scale-95"
                       onClick={() => {
                         toast.success('Información guardada exitosamente');
                         setSelectedOrder(null);
