@@ -68,6 +68,13 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
     },
   });
 
+  // Log de errores para diagnóstico
+  React.useEffect(() => {
+    if (Object.keys(form.formState.errors).length > 0) {
+      console.log('--- ERRORES DE VALIDACIÓN ---', form.formState.errors);
+    }
+  }, [form.formState.errors]);
+
   async function handlePrint(order: any, values: ReceptionFormValues) {
     try {
       const qrUrl = await generateQRCode(order.id);
@@ -107,6 +114,8 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
   }
 
   async function onSubmit(values: ReceptionFormValues) {
+    console.log('--- INTENTANDO ENVIAR FORMULARIO ---');
+    console.log('Valores:', values);
     setIsSubmitting(true);
     try {
       const result = await createReceptionOrder(values);
@@ -196,7 +205,12 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+        <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+          console.error('ERRORES DE VALIDACIÓN:', errors);
+          toast.error('Faltan datos obligatorios', {
+            description: 'Por favor, revisa los campos marcados en rojo antes de guardar.',
+          });
+        })} className="space-y-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* Sección de Cliente */}
             <div className="space-y-6">
