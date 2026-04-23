@@ -113,11 +113,12 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
       setLastOrder({ id: result.ordenId, folio: result.folio, values });
       // Generar y mostrar ticket
       await handlePrint({ id: result.ordenId, folio: result.folio }, values);
-      
-      // No reseteamos inmediatamente para permitir reimprimir si es necesario
-      // Pero podemos dar la opción de salir
     } else {
-      toast.error('Error al registrar orden: ' + result.error);
+      console.error('Detalle del error de registro:', result.error);
+      toast.error('Error: ' + result.error, {
+        description: 'Verifica la conexión a la base de datos o si las tablas existen.',
+        duration: 5000
+      });
     }
   }
 

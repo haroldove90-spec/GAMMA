@@ -4,8 +4,8 @@ import type { Database } from '../types/supabase';
 type OrderStatus = Database['public']['Tables']['ordenes_servicio']['Row']['estatus'];
 
 export async function getWorkshopOrders() {
-  const { data, error } = await supabase
-    .from('ordenes_servicio')
+  const { data, error } = await (supabase
+    .from('ordenes_servicio') as any)
     .select(`
       *,
       equipo:equipos(
@@ -16,7 +16,7 @@ export async function getWorkshopOrders() {
     .order('fecha_entrada', { ascending: false });
 
   if (error) throw error;
-  return data;
+  return data || [];
 }
 
 export async function updateOrderDiagnostics(
@@ -27,8 +27,8 @@ export async function updateOrderDiagnostics(
     costo_final?: number;
   }
 ) {
-  const { data, error } = await supabase
-    .from('ordenes_servicio')
+  const { data, error } = await (supabase
+    .from('ordenes_servicio') as any)
     .update({
       estatus: update.estatus,
       diagnostico_tecnico: update.diagnostico_tecnico,
@@ -37,15 +37,15 @@ export async function updateOrderDiagnostics(
     })
     .eq('id', orderId)
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
   return data;
 }
 
 export async function addPartToOrder(orderId: string, partId: string, quantity: number, price: number) {
-  const { data, error } = await supabase
-    .from('orden_refacciones')
+  const { data, error } = await (supabase
+    .from('orden_refacciones') as any)
     .insert({
       orden_id: orderId,
       refaccion_id: partId,
@@ -53,7 +53,7 @@ export async function addPartToOrder(orderId: string, partId: string, quantity: 
       precio_aplicado: price,
     })
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
   return data;

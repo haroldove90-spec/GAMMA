@@ -1,11 +1,8 @@
 import { supabase } from '../lib/supabase';
 
 export async function getFinancialSummary() {
-  // En una implementación real, esto usaría funciones agregadas de Supabase (rpc)
-  // Aquí simulamos la lógica para la demo con consultas eficientes
-  
-  const { data: orders, error: ordersError } = await supabase
-    .from('ordenes_servicio')
+  const { data: orders, error: ordersError } = await (supabase
+    .from('ordenes_servicio') as any)
     .select(`
       id,
       costo_final,
@@ -23,8 +20,8 @@ export async function getFinancialSummary() {
 
   if (ordersError) throw ordersError;
 
-  const { data: refacciones, error: stockError } = await supabase
-    .from('refacciones')
+  const { data: refacciones, error: stockError } = await (supabase
+    .from('refacciones') as any)
     .select('*')
     .filter('stock', 'lt', 10); // Ejemplo de stock bajo
 

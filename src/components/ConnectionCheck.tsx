@@ -52,7 +52,7 @@ export function ConnectionCheck() {
         <div className="flex items-center gap-2">
           <XCircle className="w-3 h-3 text-red-500" />
           <span className="text-[10px] uppercase font-bold tracking-widest text-red-500">Error de Conexión</span>
-          <span className="text-[8px] opacity-40 font-mono hidden md:inline">{errorMessage?.substring(0, 20)}...</span>
+          <span className="text-[8px] opacity-60 font-mono hidden md:inline text-red-400">Verifica Credenciales VITE_ o ejecuta el SQL</span>
         </div>
       )}
     </div>

@@ -4,8 +4,8 @@ import type { ReceptionFormValues } from '../features/reception/receptionSchema'
 export async function createReceptionOrder(data: ReceptionFormValues) {
   try {
     // 1. Upsert Cliente (buscando por teléfono)
-    const { data: clientData, error: clientError } = await supabase
-      .from('clientes')
+    const { data: clientData, error: clientError } = await (supabase
+      .from('clientes') as any)
       .upsert({
         nombre: data.nombre,
         telefono: data.telefono,
@@ -16,11 +16,12 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
       .single();
 
     if (clientError) throw clientError;
+    if (!clientData) throw new Error('No se pudo procesar la información del cliente');
     const clienteId = clientData.id;
 
     // 2. Crear Equipo
-    const { data: equipoData, error: equipoError } = await supabase
-      .from('equipos')
+    const { data: equipoData, error: equipoError } = await (supabase
+      .from('equipos') as any)
       .insert({
         cliente_id: clienteId,
         tipo: data.tipo,
@@ -33,11 +34,12 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
       .single();
 
     if (equipoError) throw equipoError;
+    if (!equipoData) throw new Error('No se pudo procesar la información del equipo');
     const equipoId = equipoData.id;
 
     // 3. Crear Orden de Servicio
-    const { data: ordenData, error: ordenError } = await supabase
-      .from('ordenes_servicio')
+    const { data: ordenData, error: ordenError } = await (supabase
+      .from('ordenes_servicio') as any)
       .insert({
         equipo_id: equipoId,
         falla_reportada: data.fallaReportada,
@@ -51,8 +53,9 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
       .single();
 
     if (ordenError) throw ordenError;
+    if (!ordenData) throw new Error('No se pudo generar la orden de servicio');
 
-    return { success: true, ordenId: ordenData.id, folio: ordenData.folio };
+    return { success: true, ordenId: (ordenData as any).id, folio: (ordenData as any).folio };
   } catch (error: any) {
     console.error('Error en recepción:', error);
     return { success: false, error: error.message };
