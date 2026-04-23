@@ -6,10 +6,12 @@ import type { Database } from '../types/supabase';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
+export const isConfigured = !!supabaseUrl && !!supabaseAnonKey && !supabaseUrl.includes('placeholder');
+
+if (!isConfigured) {
   console.warn(
-    'ADVERTENCIA: Credenciales de Supabase no detectadas en el entorno. ' +
-    'En Vercel, asegúrate de configurar VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY.'
+    'ADVERTENCIA: Credenciales de Supabase no configuradas. ' +
+    'Ve a Settings > Secrets y agrega VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY.'
   );
 }
 

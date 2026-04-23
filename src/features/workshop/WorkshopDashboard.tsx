@@ -403,7 +403,7 @@ function StatusColumn({ title, count, color, orders, onOrderClick }: any) {
   );
 }
 
-function OrderCard({ order, onClick }: { order: Order; onClick: () => void }) {
+function OrderCard({ order, onClick }: { order: Order; onClick: () => void; key?: string | number }) {
   const isExpired = order.fechaPromesa && isPast(order.fechaPromesa) && !isToday(order.fechaPromesa);
   const isUrgent = order.fechaPromesa && isToday(order.fechaPromesa);
 

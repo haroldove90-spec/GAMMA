@@ -70,6 +70,7 @@ export interface Database {
       ordenes_servicio: {
         Row: {
           id: string
+          folio: number
           equipo_id: string
           falla_reportada: string
           diagnostico_tecnico: string | null
@@ -84,6 +85,7 @@ export interface Database {
         }
         Insert: {
           id?: string
+          folio?: number
           equipo_id: string
           falla_reportada: string
           diagnostico_tecnico?: string | null
@@ -98,6 +100,7 @@ export interface Database {
         }
         Update: {
           id?: string
+          folio?: number
           equipo_id?: string
           falla_reportada?: string
           diagnostico_tecnico?: string | null

@@ -1,7 +1,14 @@
-import { supabase } from '../lib/supabase';
+import { supabase, isConfigured } from '../lib/supabase';
 import type { ReceptionFormValues } from '../features/reception/receptionSchema';
 
 export async function createReceptionOrder(data: ReceptionFormValues) {
+  if (!isConfigured) {
+    return { 
+      success: false, 
+      error: 'La base de datos no está configurada. Por favor, agrega VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en los ajustes del proyecto.' 
+    };
+  }
+
   try {
     // 1. Upsert Cliente (buscando por teléfono)
     const { data: clientData, error: clientError } = await (supabase
@@ -55,9 +62,22 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
     if (ordenError) throw ordenError;
     if (!ordenData) throw new Error('No se pudo generar la orden de servicio');
 
-    return { success: true, ordenId: (ordenData as any).id, folio: (ordenData as any).folio };
+    const resultData = ordenData as any;
+    return { success: true, ordenId: resultData.id, folio: resultData.folio };
   } catch (error: any) {
-    console.error('Error en recepción:', error);
-    return { success: false, error: error.message };
+    console.error('Error detallado en recepción:', error);
+    
+    // Capturar errores comunes de Supabase para guiar al usuario
+    let userFriendlyError = error.message || 'Error desconocido';
+    
+    if (error.code === '42P01') {
+      userFriendlyError = 'La tabla no existe. Asegúrate de haber ejecutado el SQL en Supabase.';
+    } else if (error.code === '23505') {
+      userFriendlyError = 'Ya existe un registro con ese dato único (ej: el folio o teléfono ya existe).';
+    } else if (error.message?.includes('failed to fetch')) {
+      userFriendlyError = 'No hay conexión con el servidor. Verifica las llaves VITE_SUPABASE_URL y ANON_KEY.';
+    }
+
+    return { success: false, error: userFriendlyError };
   }
 }
