@@ -2,11 +2,11 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../types/supabase';
 
 // En Vite, para que las variables se expongan al cliente deben empezar con VITE_
-// Sin embargo, podemos configurar el cliente para que sea flexible
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Usamos una combinación de variables de entorno y variables inyectadas por el servidor (window)
+const supabaseUrl = (window as any).VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = (window as any).VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const isConfigured = !!supabaseUrl && !!supabaseAnonKey && !supabaseUrl.includes('placeholder');
+export const isConfigured = !!supabaseUrl && !!supabaseAnonKey && (supabaseUrl.length > 5 && !supabaseUrl.includes('placeholder'));
 
 if (!isConfigured) {
   console.warn(
