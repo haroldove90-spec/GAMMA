@@ -74,7 +74,9 @@ export interface Database {
           falla_reportada: string
           diagnostico_tecnico: string | null
           costo_estimado: number
+          costo_final: number | null
           anticipo: number
+          metodo_pago: 'Efectivo' | 'Transferencia' | 'Tarjeta' | null
           estatus: 'Pendiente' | 'En Diagnóstico' | 'Esperando Refacción' | 'Listo para Entrega' | 'Entregado'
           fecha_entrada: string
           fecha_promesa: string | null
@@ -86,7 +88,9 @@ export interface Database {
           falla_reportada: string
           diagnostico_tecnico?: string | null
           costo_estimado?: number
+          costo_final?: number | null
           anticipo?: number
+          metodo_pago?: 'Efectivo' | 'Transferencia' | 'Tarjeta' | null
           estatus?: 'Pendiente' | 'En Diagnóstico' | 'Esperando Refacción' | 'Listo para Entrega' | 'Entregado'
           fecha_entrada?: string
           fecha_promesa?: string | null
@@ -98,7 +102,9 @@ export interface Database {
           falla_reportada?: string
           diagnostico_tecnico?: string | null
           costo_estimado?: number
+          costo_final?: number | null
           anticipo?: number
+          metodo_pago?: 'Efectivo' | 'Transferencia' | 'Tarjeta' | null
           estatus?: 'Pendiente' | 'En Diagnóstico' | 'Esperando Refacción' | 'Listo para Entrega' | 'Entregado'
           fecha_entrada?: string
           fecha_promesa?: string | null

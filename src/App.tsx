@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Settings, Plus, Terminal, Package, ClipboardList, AlertTriangle, ChevronLeft, LayoutDashboard, Wrench } from 'lucide-react';
+import { Settings, Plus, Terminal, Package, ClipboardList, AlertTriangle, ChevronLeft, LayoutDashboard, Wrench, BarChart3 } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 import { ReceptionForm } from './features/reception/ReceptionForm';
 import { WorkshopDashboard } from './features/workshop/WorkshopDashboard';
+import { AdminDashboard } from './features/admin/AdminDashboard';
 
-type AppView = 'dashboard' | 'reception' | 'workshop';
+type AppView = 'dashboard' | 'reception' | 'workshop' | 'admin';
 
 export default function App() {
   const [view, setView] = useState<AppView>('dashboard');
@@ -34,12 +35,19 @@ export default function App() {
               icon={<Wrench className="w-4 h-4" />}
               label="Taller"
             />
+            <NavButton 
+              active={view === 'admin'} 
+              onClick={() => setView('admin')} 
+              icon={<BarChart3 className="w-4 h-4" />}
+              label="Inteligencia"
+            />
           </nav>
           <div className="text-left md:text-right w-full md:w-auto">
             <p className="text-[10px] md:text-sm font-mono opacity-50 uppercase">Estado del Sistema / {new Date().toLocaleDateString('es-MX')}</p>
             <p className="text-xl md:text-2xl font-bold uppercase tracking-tight">
               {view === 'dashboard' ? 'Dashboard Administrativo' : 
-               view === 'reception' ? 'Módulo de Recepción' : 'Taller Operativo'}
+               view === 'reception' ? 'Módulo de Recepción' : 
+               view === 'admin' ? 'Inteligencia de Negocio' : 'Taller Operativo'}
             </p>
           </div>
         </div>
@@ -191,6 +199,12 @@ export default function App() {
         {view === 'workshop' && (
           <main className="flex-1 bg-white overflow-y-auto animate-in fade-in slide-in-from-right-4 duration-500">
             <WorkshopDashboard />
+          </main>
+        )}
+
+        {view === 'admin' && (
+          <main className="flex-1 bg-[#0b0c10] overflow-y-auto animate-in fade-in zoom-in duration-500">
+            <AdminDashboard />
           </main>
         )}
 
