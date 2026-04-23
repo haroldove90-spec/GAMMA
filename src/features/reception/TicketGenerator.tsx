@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomWidth: 2,
-    borderBottomColor: '#002855',
+    borderBottomColor: '#002D4C',
     paddingBottom: 10,
     marginBottom: 20,
   },
@@ -29,11 +29,11 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 24,
     fontWeight: 'black',
-    color: '#002855',
+    color: '#002D4C',
   },
   logoSubtext: {
     fontSize: 8,
-    color: '#FF6B35',
+    color: '#FF4F00',
     letterSpacing: 2,
     textTransform: 'uppercase',
   },
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     backgroundColor: '#f0f4f8',
     padding: 4,
-    color: '#002855',
+    color: '#002D4C',
     marginBottom: 5,
     textTransform: 'uppercase',
   },
@@ -192,7 +192,7 @@ export const OrderTicket = ({ data, qrCodeUrl }: { data: TicketData; qrCodeUrl: 
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Entrega:</Text>
-          <Text style={[styles.value, { color: '#FF6B35', fontWeight: 'bold' }]}>
+          <Text style={[styles.value, { color: '#FF4F00', fontWeight: 'bold' }]}>
             {data.orden.fechaPromesa ? new Date(data.orden.fechaPromesa).toLocaleDateString() : 'Por confirmar'}
           </Text>
         </View>

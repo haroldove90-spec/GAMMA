@@ -42,8 +42,8 @@ const MOCK_DATA = {
   profit: 33300,
   conversionRate: 85.5,
   categoryData: [
-    { name: 'Audio', value: 24, color: '#002855' },
-    { name: 'Video', value: 45, color: '#FF6B35' },
+    { name: 'Audio', value: 24, color: '#002D4C' },
+    { name: 'Video', value: 45, color: '#FF4F00' },
     { name: 'Computación', value: 38, color: '#4F46E5' },
     { name: 'Línea Blanca', value: 18, color: '#10B981' }
   ],
@@ -75,13 +75,13 @@ export function AdminDashboard() {
   };
 
   return (
-    <div className="bg-[#0b0c10] min-h-screen text-[#f8f8f8] p-4 md:p-8 font-sans">
+    <div className="bg-[#002D4C] min-h-screen text-[#f8f8f8] p-4 md:p-8 font-sans">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
           <div>
             <h1 className="text-4xl font-black tracking-tighter uppercase flex items-center gap-3">
-              <TrendingUp className="w-10 h-10 text-[#FF6B35]" />
+              <TrendingUp className="w-10 h-10 text-[#FF4F00]" />
               Business Intelligence
             </h1>
             <p className="text-white/40 font-mono text-xs uppercase tracking-widest mt-1">Salud Financiera & Operativa GAMA</p>
@@ -96,7 +96,7 @@ export function AdminDashboard() {
               Este Mes
             </Button>
             <Button 
-              className="bg-[#FF6B35] hover:bg-[#e85a2a] text-white font-bold"
+              className="bg-[#FF4F00] hover:bg-[#e64700] text-white font-bold"
               onClick={handleExport}
             >
               <Download className="w-4 h-4 mr-2" />
@@ -201,14 +201,14 @@ export function AdminDashboard() {
               <PaymentMethodItem 
                 label="Tarjeta" 
                 amount={data.cashClosing['Tarjeta']} 
-                icon={<CreditCard className="text-[#FF6B35]" />}
+                icon={<CreditCard className="text-[#FF4F00]" />}
                 total={data.revenue}
               />
               
               <div className="pt-6 border-t border-white/10">
                 <div className="flex justify-between items-end">
                   <span className="text-[10px] uppercase font-bold text-white/40">Total Arqueo</span>
-                  <span className="text-3xl font-black text-[#FF6B35] tracking-tighter">
+                  <span className="text-3xl font-black text-[#FF4F00] tracking-tighter">
                     ${Object.values(data.cashClosing).reduce((a, b) => a + b, 0).toLocaleString()}
                   </span>
                 </div>
@@ -227,12 +227,12 @@ export function AdminDashboard() {
                   Inventario Crítico
                 </CardTitle>
               </div>
-              <Button size="sm" variant="ghost" className="text-[10px] font-bold text-[#FF6B35]">VER TODO EL KARDEX</Button>
+              <Button size="sm" variant="ghost" className="text-[10px] font-bold text-[#FF4F00]">VER TODO EL KARDEX</Button>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {data.criticalStock.map(item => (
-                  <div key={item.id} className="bg-black/20 p-4 border border-white/10 rounded-xl flex justify-between items-center group hover:border-[#FF6B35] transition-colors">
+                  <div key={item.id} className="bg-black/20 p-4 border border-white/10 rounded-xl flex justify-between items-center group hover:border-[#FF4F00] transition-colors">
                     <div>
                       <h4 className="font-bold text-sm">{item.nombre}</h4>
                       <p className="text-[10px] text-white/40 font-mono">COSTO: ${item.precio_costo}</p>
@@ -289,7 +289,7 @@ function PaymentMethodItem({ label, amount, icon, total }: any) {
       </div>
       <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
         <div 
-          className="h-full bg-[#FF6B35] rounded-full" 
+          className="h-full bg-[#FF4F00] rounded-full" 
           style={{ width: `${percentage}%` }}
         />
       </div>

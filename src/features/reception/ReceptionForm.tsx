@@ -125,13 +125,13 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
         <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
           <CheckCircle2 className="w-12 h-12" />
         </div>
-        <h2 className="text-4xl font-black text-[#002855] mb-2 uppercase">¡Registro Exitoso!</h2>
+        <h2 className="text-4xl font-black text-[#002D4C] mb-2 uppercase">¡Registro Exitoso!</h2>
         <p className="text-gray-500 mb-8">La orden #{lastOrder.id.substring(0, 8).toUpperCase()} se ha guardado correctamente en la nube.</p>
         
         <div className="flex flex-col gap-4">
           <Button 
             onClick={() => handlePrint(lastOrder, lastOrder.values)}
-            className="h-16 text-xl bg-[#FF6B35] hover:bg-[#e85a2a] text-white font-bold"
+            className="h-16 text-xl bg-[#FF4F00] hover:bg-[#e64700] text-white font-bold"
           >
             <Printer className="mr-2 h-6 w-6" />
             Reimprimir Ticket

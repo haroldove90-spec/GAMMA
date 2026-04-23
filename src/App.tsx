@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Settings, Plus, Terminal, Package, ClipboardList, AlertTriangle, ChevronLeft, LayoutDashboard, Wrench, BarChart3 } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
+import { InstallPrompt } from './components/InstallPrompt';
 import { ReceptionForm } from './features/reception/ReceptionForm';
 import { WorkshopDashboard } from './features/workshop/WorkshopDashboard';
 import { AdminDashboard } from './features/admin/AdminDashboard';
@@ -13,15 +14,23 @@ export default function App() {
   const [view, setView] = useState<AppView>('dashboard');
 
   return (
-    <div className="bg-[#0F1115] text-[#F8F8F8] font-sans min-h-screen flex flex-col overflow-x-hidden">
+    <div className="bg-[#002D4C] text-[#F8F8F8] font-sans min-h-screen flex flex-col overflow-x-hidden">
       <Toaster position="top-right" richColors />
+      <InstallPrompt />
       
       {/* Header Section with Bold Typography */}
-      <header className="p-6 md:p-8 flex flex-col md:flex-row justify-between items-baseline border-b border-white/10 gap-4">
+      <header className="p-6 md:p-8 flex flex-col md:flex-row justify-between items-baseline border-b border-white/10 gap-4 bg-[#002D4C]">
         <div className="flex flex-col gap-2">
-          <div className="flex items-baseline gap-4 cursor-pointer" onClick={() => setView('dashboard')}>
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none select-none text-white">GAMA</h1>
-            <span className="text-xs uppercase tracking-[0.4em] font-medium text-yellow-400">Centro de Reparación</span>
+          <div className="flex items-center gap-4 cursor-pointer" onClick={() => setView('dashboard')}>
+            <img 
+              src="https://cossma.com.mx/gama.png" 
+              alt="Gama Logo" 
+              className="h-12 md:h-16 w-auto object-contain"
+            />
+            <div className="flex flex-col">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tighter leading-none select-none text-white italic">GAMA</h1>
+              <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-[#FF4F00]">Centro de Reparación</span>
+            </div>
           </div>
           <div className="mt-2">
             <ConnectionCheck />
@@ -50,8 +59,8 @@ export default function App() {
             />
           </nav>
           <div className="text-left md:text-right w-full md:w-auto">
-            <p className="text-[10px] md:text-sm font-mono opacity-50 uppercase">Estado del Sistema / {new Date().toLocaleDateString('es-MX')}</p>
-            <p className="text-xl md:text-2xl font-bold uppercase tracking-tight">
+            <p className="text-[10px] md:text-sm font-mono opacity-50 uppercase text-white/50">Estado del Sistema / {new Date().toLocaleDateString('es-MX')}</p>
+            <p className="text-xl md:text-2xl font-bold uppercase tracking-tight text-white">
               {view === 'dashboard' ? 'Dashboard Administrativo' : 
                view === 'reception' ? 'Módulo de Recepción' : 
                view === 'admin' ? 'Inteligencia de Negocio' : 'Taller Operativo'}
@@ -193,7 +202,7 @@ export default function App() {
 
               <div className="mt-8 pt-8 border-t border-white/10">
                 <p className="text-[10px] font-mono opacity-30 leading-relaxed uppercase">
-                  GAMA Repair Center v1.0.4<br/>
+                  Gama v1.0.5<br/>
                   Cloud Connection: Stable<br/>
                   Latency: 38ms<br/>
                   Server: MX-SOUTH-01
@@ -251,7 +260,7 @@ function NavButton({ active, onClick, icon, label }: any) {
       className={cn(
         "flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all",
         active 
-          ? "bg-yellow-400 text-black shadow-lg shadow-yellow-400/20" 
+          ? "bg-[#FF4F00] text-white shadow-lg shadow-[#FF4F00]/20" 
           : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
       )}
     >
