@@ -11,7 +11,9 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
 
   try {
     // 1. Upsert Cliente (buscando por teléfono)
-    console.log('Intentando upsert de cliente:', { nombre: data.nombre, telefono: data.telefono });
+    console.log('--- RECEPTION SERVICE DEBUG ---');
+    console.log('Payload Cliente:', { nombre: data.nombre, telefono: data.telefono, email: data.email, direccion: data.direccion });
+    
     const { data: clientData, error: clientError } = await (supabase
       .from('clientes') as any)
       .upsert({
@@ -24,14 +26,17 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
       .single();
 
     if (clientError) {
-      console.error('Error en upsert cliente:', clientError);
+      console.error('Error FATAL en upsert cliente:', clientError);
+      console.log('Detalle error:', JSON.stringify(clientError, null, 2));
       throw clientError;
     }
     if (!clientData) throw new Error('El cliente no devolvió datos tras el registro');
     const clienteId = clientData.id;
 
     // 2. Crear Equipo
-    console.log('Insertando equipo para cliente:', clienteId);
+    console.log('Insertando equipo para cliente id:', clienteId);
+    console.log('Payload Equipo:', { cliente_id: clienteId, tipo: data.tipo, marca: data.marca });
+    
     const { data: equipoData, error: equipoError } = await (supabase
       .from('equipos') as any)
       .insert({
@@ -46,14 +51,16 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
       .single();
 
     if (equipoError) {
-      console.error('Error en insert equipo:', equipoError);
+      console.error('Error FATAL en insert equipo:', equipoError);
+      console.log('Detalle error:', JSON.stringify(equipoError, null, 2));
       throw equipoError;
     }
     if (!equipoData) throw new Error('El equipo no devolvió datos tras el registro');
     const equipoId = equipoData.id;
 
     // 3. Crear Orden de Servicio
-    console.log('Creando orden de servicio para equipo:', equipoId);
+    console.log('Creando orden de servicio para equipo id:', equipoId);
+    
     const { data: ordenData, error: ordenError } = await (supabase
       .from('ordenes_servicio') as any)
       .insert({
@@ -69,7 +76,8 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
       .single();
 
     if (ordenError) {
-      console.error('Error en insert orden:', ordenError);
+      console.error('Error FATAL en insert orden:', ordenError);
+      console.log('Detalle error:', JSON.stringify(ordenError, null, 2));
       throw ordenError;
     }
     if (!ordenData) throw new Error('La orden no devolvió datos tras el registro');

@@ -259,7 +259,7 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Categoría</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
                         <FormControl>
                           <SelectTrigger className="bg-gray-50 border-gray-100 rounded-2xl h-12 text-[11px] font-black uppercase tracking-widest px-6 shadow-sm">
                             <SelectValue placeholder="Selecciona..." />
@@ -383,7 +383,7 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Forma de Pago</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
                         <FormControl>
                           <SelectTrigger className="bg-white border-gray-100 rounded-2xl h-12 text-[10px] font-black uppercase tracking-widest px-6 shadow-sm">
                             <SelectValue placeholder="Selecciona..." />
@@ -406,7 +406,7 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                     <FormItem className="flex flex-col">
                       <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Compromiso</FormLabel>
                       <Popover>
-                        <PopoverTrigger asChild>
+                        <PopoverTrigger as="div">
                           <Button
                             id="date-picker-trigger"
                             variant={"outline"}
