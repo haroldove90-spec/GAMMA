@@ -55,6 +55,7 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
       telefono: '',
       email: '',
       direccion: '',
+      tipo: '' as any,
       marca: '',
       modelo: '',
       serie: '',
@@ -62,6 +63,8 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
       fallaReportada: '',
       costoEstimado: 0,
       anticipo: 0,
+      metodoPago: 'Efectivo',
+      fechaPromesa: undefined,
     },
   });
 
@@ -406,26 +409,28 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                     <FormItem className="flex flex-col">
                       <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Compromiso</FormLabel>
                       <Popover>
-                        <PopoverTrigger as="div">
-                          <Button
-                            id="date-picker-trigger"
-                            variant={"outline"}
-                            type="button"
-                            className={cn(
-                              "w-full h-12 px-6 rounded-2xl bg-white border-gray-100 text-[10px] font-black uppercase tracking-widest shadow-sm text-left flex justify-between items-center hover:bg-gray-50",
-                              !field.value && "text-gray-300"
-                            )}
-                          >
-                            <span className="truncate">
-                              {field.value ? (
-                                format(field.value, "dd/MM/yy", { locale: es })
-                              ) : (
-                                "Fecha..."
+                        <PopoverTrigger
+                          render={
+                            <Button
+                              id="date-picker-trigger"
+                              variant={"outline"}
+                              type="button"
+                              className={cn(
+                                "w-full h-12 px-6 rounded-2xl bg-white border-gray-100 text-[10px] font-black uppercase tracking-widest shadow-sm text-left flex justify-between items-center hover:bg-gray-50",
+                                !field.value && "text-gray-300"
                               )}
-                            </span>
-                            <CalendarIcon className="h-4 w-4 opacity-50 flex-shrink-0" />
-                          </Button>
-                        </PopoverTrigger>
+                            >
+                              <span className="truncate">
+                                {field.value ? (
+                                  format(field.value, "dd/MM/yy", { locale: es })
+                                ) : (
+                                  "Fecha..."
+                                )}
+                              </span>
+                              <CalendarIcon className="h-4 w-4 opacity-50 flex-shrink-0" />
+                            </Button>
+                          }
+                        />
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
