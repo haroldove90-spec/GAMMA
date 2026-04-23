@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '../lib/supabase';
 import { CheckCircle, XCircle, Database as DbIcon, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
