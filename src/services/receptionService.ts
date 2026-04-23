@@ -43,15 +43,16 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
         falla_reportada: data.fallaReportada,
         costo_estimado: data.costoEstimado,
         anticipo: data.anticipo,
+        metodo_pago: data.metodoPago,
         estatus: 'Pendiente',
         fecha_promesa: data.fechaPromesa?.toISOString() || null,
       })
-      .select('id')
+      .select('id, folio')
       .single();
 
     if (ordenError) throw ordenError;
 
-    return { success: true, ordenId: ordenData.id };
+    return { success: true, ordenId: ordenData.id, folio: ordenData.folio };
   } catch (error: any) {
     console.error('Error en recepción:', error);
     return { success: false, error: error.message };

@@ -112,10 +112,70 @@ const MOCK_ORDERS: Order[] = [
   }
 ];
 
+import { getWorkshopOrders, updateOrderDiagnostics } from '../../services/workshopService';
+
 export function WorkshopDashboard() {
-  const [orders] = React.useState<Order[]>(MOCK_ORDERS);
+  const [orders, setOrders] = React.useState<Order[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [diagnostico, setDiagnostico] = React.useState('');
+  const [status, setStatus] = React.useState<Status>('Pendiente');
+  const [costo, setCosto] = React.useState(0);
+
+  React.useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  React.useEffect(() => {
+    if (selectedOrder) {
+      setDiagnostico(selectedOrder.diagnostico || '');
+      setStatus(selectedOrder.status);
+      setCosto(selectedOrder.costo);
+    }
+  }, [selectedOrder]);
+
+  const fetchOrders = async () => {
+    try {
+      const data = await getWorkshopOrders();
+      const mapped = data.map((o: any) => ({
+        id: o.id,
+        orderNumber: `GMA-${o.folio}`,
+        customerName: o.equipo?.cliente?.nombre || 'S/N',
+        phone: o.equipo?.cliente?.telefono || '',
+        equipment: `${o.equipo?.marca} ${o.equipo?.modelo || ''}`,
+        category: o.equipo?.tipo as Category,
+        status: o.estatus as Status,
+        falla: o.falla_reportada,
+        diagnostico: o.diagnostico_tecnico,
+        fechaPromesa: o.fecha_promesa ? new Date(o.fecha_promesa) : undefined,
+        costo: Number(o.costo_final || o.costo_estimado) || 0,
+      }));
+      setOrders(mapped);
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al cargar órdenes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!selectedOrder) return;
+    try {
+      toast.loading('Guardando cambios...', { id: 'save' });
+      await updateOrderDiagnostics(selectedOrder.id, {
+        estatus: status,
+        diagnostico_tecnico: diagnostico,
+        costo_final: costo
+      });
+      toast.success('Bitácora técnica actualizada', { id: 'save' });
+      setSelectedOrder(null);
+      fetchOrders();
+    } catch (error) {
+      toast.error('Error al guardar datos', { id: 'save' });
+    }
+  };
 
   const filteredOrders = orders.filter(o => 
     o.customerName.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -124,10 +184,18 @@ export function WorkshopDashboard() {
   );
 
   const sendWhatsApp = (order: Order) => {
-    const message = `Hola ${order.customerName}, le informamos que su equipo ${order.equipment} (${order.orderNumber}) en GAMA ya está listo para entrega. El costo final es de $${order.costo}.`;
+    // Si el usuario proporcionó un número específico para pruebas, podríamos usarlo, 
+    // pero lo correcto es usar el de la orden.
+    const message = `🛠️ *GAMA REPAIR CENTER*\n\nHola *${order.customerName}*, le informamos sobre el estatus de su *${order.equipment}* (Folio: ${order.orderNumber}):\n\n✅ *Estatus:* ${status}\n📝 *Diagnóstico:* ${diagnostico || 'En revisión'}\n💰 *Costo Est.:* $${costo}\n\nQuedamos a sus órdenes.`;
     const url = `https://wa.me/52${order.phone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
+
+  if (loading) return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF4F00]" />
+    </div>
+  );
 
   return (
     <div className="bg-transparent min-h-screen text-gray-800 p-0 font-sans">
@@ -248,13 +316,15 @@ export function WorkshopDashboard() {
                       <Textarea 
                         placeholder="Describe el problema técnico detectado..." 
                         className="bg-gray-50 border-gray-100 rounded-3xl min-h-[120px] p-6 text-[11px] font-medium placeholder:text-gray-300 focus:bg-white transition-all outline-none"
+                        value={diagnostico}
+                        onChange={(e) => setDiagnostico(e.target.value)}
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">
                       <div>
                         <label className="text-[10px] font-black uppercase text-gray-400 mb-3 block tracking-widest">Cambiar Estado</label>
-                        <Select defaultValue={selectedOrder.status}>
+                        <Select value={status} onValueChange={(val: Status) => setStatus(val)}>
                           <SelectTrigger className="bg-gray-50 border-gray-100 rounded-2xl h-12 text-[11px] font-black uppercase tracking-wide">
                             <SelectValue />
                           </SelectTrigger>
@@ -263,6 +333,7 @@ export function WorkshopDashboard() {
                             <SelectItem value="En Diagnóstico">En Diagnóstico</SelectItem>
                             <SelectItem value="Esperando Refacción">Esperando Refacción</SelectItem>
                             <SelectItem value="Listo para Entrega">Listo para Entrega</SelectItem>
+                            <SelectItem value="Entregado">Entregado</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -272,7 +343,8 @@ export function WorkshopDashboard() {
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-[#FF4F00]">$</span>
                           <Input 
                             type="number" 
-                            defaultValue={selectedOrder.costo} 
+                            value={costo}
+                            onChange={(e) => setCosto(Number(e.target.value))}
                             className="bg-gray-50 border-gray-100 rounded-2xl h-12 pl-8 font-black text-gray-800"
                           />
                         </div>
@@ -293,10 +365,7 @@ export function WorkshopDashboard() {
                     </div>
                     <Button 
                       className="w-full sm:w-auto bg-[#002D4C] hover:bg-blue-900 text-white font-black uppercase text-[10px] tracking-widest h-14 px-10 rounded-2xl shadow-xl shadow-blue-900/20 transition-transform active:scale-95"
-                      onClick={() => {
-                        toast.success('Información guardada exitosamente');
-                        setSelectedOrder(null);
-                      }}
+                      onClick={handleSave}
                     >
                       <Save className="w-4 h-4 mr-2" />
                       Guardar Bitácora

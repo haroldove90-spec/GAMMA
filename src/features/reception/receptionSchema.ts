@@ -20,6 +20,7 @@ export const receptionSchema = z.object({
   fallaReportada: z.string().min(5, 'La descripción de la falla es obligatoria'),
   costoEstimado: z.number().min(0).default(0),
   anticipo: z.number().min(0).default(0),
+  metodoPago: z.enum(['Efectivo', 'Transferencia', 'Tarjeta']).optional().default('Efectivo'),
   fechaPromesa: z.date().optional(),
 });
 

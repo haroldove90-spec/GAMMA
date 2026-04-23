@@ -218,7 +218,20 @@ export function AdminDashboard() {
             </CardContent>
             
             <div className="mt-10">
-               <Button className="w-full bg-[#002D4C] text-white font-black uppercase text-[10px] tracking-widest rounded-2xl h-14 shadow-2xl shadow-blue-900/30 hover:scale-[1.02] transition-transform active:scale-95">
+               <Button 
+                onClick={() => {
+                  const total = Object.values(data.cashClosing).reduce((a: number, b: any) => a + (Number(b) || 0), 0);
+                  toast.promise(
+                    new Promise((resolve) => setTimeout(resolve, 2000)),
+                    {
+                      loading: 'Procesando cierre de caja...',
+                      success: `Arqueo completado con éxito. Total: $${total.toLocaleString()}`,
+                      error: 'Error al procesar el arqueo',
+                    }
+                  );
+                }}
+                className="w-full bg-[#002D4C] text-white font-black uppercase text-[10px] tracking-widest rounded-2xl h-14 shadow-2xl shadow-blue-900/30 hover:scale-[1.02] transition-transform active:scale-95"
+               >
                  Realizar Arqueo Completo
                </Button>
             </div>

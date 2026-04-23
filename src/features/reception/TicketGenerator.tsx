@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
 
 interface TicketData {
   id: string;
+  folio: number;
   cliente: {
     nombre: string;
     telefono: string;
@@ -124,6 +125,7 @@ interface TicketData {
     fallaReportada: string;
     costoEstimado: number;
     anticipo: number;
+    metodoPago?: string;
     fechaEntrada: string;
     fechaPromesa?: string;
   };
@@ -140,7 +142,7 @@ export const OrderTicket = ({ data, qrCodeUrl }: { data: TicketData; qrCodeUrl: 
         </View>
         <View style={styles.folioContainer}>
           <Text style={styles.folioLabel}>ORDEN DE SERVICIO</Text>
-          <Text style={styles.folioValue}>#{data.id.substring(0, 8).toUpperCase()}</Text>
+          <Text style={styles.folioValue}>#GMA-{data.folio}</Text>
           <Text style={{ fontSize: 7, marginTop: 2 }}>{new Date(data.orden.fechaEntrada).toLocaleString()}</Text>
         </View>
       </View>
@@ -188,7 +190,7 @@ export const OrderTicket = ({ data, qrCodeUrl }: { data: TicketData; qrCodeUrl: 
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Anticipo:</Text>
-          <Text style={styles.value}>${data.orden.anticipo.toFixed(2)}</Text>
+          <Text style={styles.value}>${data.orden.anticipo.toFixed(2)} ({data.orden.metodoPago || 'Efectivo'})</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Entrega:</Text>

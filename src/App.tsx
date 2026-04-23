@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useState } from 'react';
 import { Settings, Plus, Terminal, Package, ClipboardList, AlertTriangle, ChevronLeft, LayoutDashboard, Wrench, BarChart3, Search, LogOut, Layout, User, Bell, TrendingUp, TrendingDown } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
@@ -11,11 +12,27 @@ import { ConnectionCheck } from './components/ConnectionCheck';
 
 type AppView = 'dashboard' | 'reception' | 'workshop' | 'admin';
 
+import { getWorkshopOrders } from './services/workshopService';
+
 export default function App() {
   const [view, setView] = useState<AppView>('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
 
   const closeSidebar = () => setIsSidebarOpen(false);
+
+  const fetchRecentOrders = async () => {
+    try {
+      const data = await getWorkshopOrders();
+      setRecentOrders(data.slice(0, 10)); // Top 10
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchRecentOrders();
+  }, [view]); // Recargar al volver al dashboard
 
   return (
     <div className="bg-[#E9EDF1] text-[#2D3748] font-sans min-h-screen flex overflow-hidden relative">
@@ -161,8 +178,7 @@ export default function App() {
                       Nueva Orden +
                     </button>
                   </div>
-                  
-                  <div className="overflow-x-auto">
+                                    <div className="overflow-x-auto">
                     <div className="min-w-[600px] divide-y divide-gray-50">
                       <div className="grid grid-cols-6 p-5 bg-gray-50/50 text-[9px] font-black uppercase tracking-widest text-gray-400 px-10">
                         <div>Folio</div>
@@ -170,10 +186,22 @@ export default function App() {
                         <div className="col-span-2">Cliente</div>
                         <div className="text-right">Estado</div>
                       </div>
-                      <OrderRowUI id="GMA-001" eq="TV Samsung 55" cl="M. Lopez" ph="55 12..34" st="En Proceso" />
-                      <OrderRowUI id="GMA-002" eq="MacBook Pro" cl="R. Mendez" ph="55 56..78" st="Pendiente" />
-                      <OrderRowUI id="GMA-003" eq="PS5 Slim" cl="C. Ortiz" ph="55 99..00" st="Listo" />
-                      <OrderRowUI id="GMA-004" eq="Xbox Series X" cl="L. Diaz" ph="55 44..55" st="Entregado" />
+                      {recentOrders.length > 0 ? (
+                        recentOrders.map((o) => (
+                          <OrderRowUI 
+                            key={o.id}
+                            id={`GMA-${o.folio}`} 
+                            eq={`${o.equipo?.marca} ${o.equipo?.modelo || ''}`} 
+                            cl={o.equipo?.cliente?.nombre || 'S/N'} 
+                            ph={o.equipo?.cliente?.telefono || ''} 
+                            st={o.estatus} 
+                          />
+                        ))
+                      ) : (
+                        <div className="p-20 text-center text-gray-300 text-[10px] font-black uppercase tracking-widest">
+                           Sin actividad reciente
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

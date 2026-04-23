@@ -70,6 +70,7 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
       const qrUrl = await generateQRCode(order.id);
       const ticketData = {
         id: order.id,
+        folio: order.folio,
         cliente: {
           nombre: values.nombre,
           telefono: values.telefono,
@@ -86,6 +87,7 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
           fallaReportada: values.fallaReportada,
           costoEstimado: values.costoEstimado,
           anticipo: values.anticipo,
+          metodoPago: values.metodoPago,
           fechaEntrada: new Date().toISOString(),
           fechaPromesa: values.fechaPromesa?.toISOString(),
         }
@@ -108,9 +110,9 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
 
     if (result.success) {
       toast.success('Orden registrada con éxito');
-      setLastOrder({ id: result.ordenId, values });
+      setLastOrder({ id: result.ordenId, folio: result.folio, values });
       // Generar y mostrar ticket
-      await handlePrint({ id: result.ordenId }, values);
+      await handlePrint({ id: result.ordenId, folio: result.folio }, values);
       
       // No reseteamos inmediatamente para permitir reimprimir si es necesario
       // Pero podemos dar la opción de salir
@@ -126,7 +128,7 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
         </div>
         <h2 className="text-4xl font-black text-[#002D4C] mb-4 uppercase tracking-tighter italic">¡Registro Exitoso!</h2>
         <p className="text-gray-400 font-medium mb-10 text-sm leading-relaxed">
-          La orden <span className="text-[#FF4F00] font-black">#{lastOrder.id.substring(0, 8).toUpperCase()}</span> se ha procesado correctamente. El ticket se ha generado automáticamente.
+          La orden <span className="text-[#FF4F00] font-black">#GMA-{lastOrder.folio}</span> se ha procesado correctamente. El ticket se ha generado automáticamente.
         </p>
         
         <div className="flex flex-col gap-4">
@@ -318,7 +320,7 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <FormField
                   control={form.control}
                   name="costoEstimado"
@@ -363,6 +365,28 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                 />
                 <FormField
                   control={form.control}
+                  name="metodoPago"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[10px] font-black uppercase tracking-widest text-gray-400">Forma de Pago</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="bg-white border-gray-100 rounded-2xl h-12 text-[10px] font-black uppercase tracking-widest px-6 shadow-sm">
+                            <SelectValue placeholder="Selecciona..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-2xl border-gray-100">
+                          <SelectItem value="Efectivo" className="text-[10px] font-bold uppercase py-2">Efectivo</SelectItem>
+                          <SelectItem value="Transferencia" className="text-[10px] font-bold uppercase py-2">Transferencia</SelectItem>
+                          <SelectItem value="Tarjeta" className="text-[10px] font-bold uppercase py-2">Tarjeta</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="fechaPromesa"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
@@ -377,12 +401,14 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
                                 !field.value && "text-gray-300"
                               )}
                             >
-                              {field.value ? (
-                                format(field.value, "PPP", { locale: es })
-                              ) : (
-                                <span>Seleccionar...</span>
-                              )}
-                              <CalendarIcon className="h-4 w-4 opacity-50" />
+                              <span className="truncate">
+                                {field.value ? (
+                                  format(field.value, "dd/MM/yy", { locale: es })
+                                ) : (
+                                  "Fecha..."
+                                )}
+                              </span>
+                              <CalendarIcon className="h-4 w-4 opacity-50 flex-shrink-0" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>

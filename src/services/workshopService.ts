@@ -32,7 +32,7 @@ export async function updateOrderDiagnostics(
     .update({
       estatus: update.estatus,
       diagnostico_tecnico: update.diagnostico_tecnico,
-      costo_estimado: update.costo_final, // En este flujo simplificado usamos costo_estimado como final
+      costo_final: update.costo_final,
       updated_at: new Date().toISOString(),
     })
     .eq('id', orderId)
