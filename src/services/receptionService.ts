@@ -11,6 +11,7 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
 
   try {
     // 1. Upsert Cliente (buscando por teléfono)
+    console.log('Intentando upsert de cliente:', { nombre: data.nombre, telefono: data.telefono });
     const { data: clientData, error: clientError } = await (supabase
       .from('clientes') as any)
       .upsert({
@@ -22,11 +23,15 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
       .select('id')
       .single();
 
-    if (clientError) throw clientError;
-    if (!clientData) throw new Error('No se pudo procesar la información del cliente');
+    if (clientError) {
+      console.error('Error en upsert cliente:', clientError);
+      throw clientError;
+    }
+    if (!clientData) throw new Error('El cliente no devolvió datos tras el registro');
     const clienteId = clientData.id;
 
     // 2. Crear Equipo
+    console.log('Insertando equipo para cliente:', clienteId);
     const { data: equipoData, error: equipoError } = await (supabase
       .from('equipos') as any)
       .insert({
@@ -40,11 +45,15 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
       .select('id')
       .single();
 
-    if (equipoError) throw equipoError;
-    if (!equipoData) throw new Error('No se pudo procesar la información del equipo');
+    if (equipoError) {
+      console.error('Error en insert equipo:', equipoError);
+      throw equipoError;
+    }
+    if (!equipoData) throw new Error('El equipo no devolvió datos tras el registro');
     const equipoId = equipoData.id;
 
     // 3. Crear Orden de Servicio
+    console.log('Creando orden de servicio para equipo:', equipoId);
     const { data: ordenData, error: ordenError } = await (supabase
       .from('ordenes_servicio') as any)
       .insert({
@@ -59,8 +68,11 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
       .select('id, folio')
       .single();
 
-    if (ordenError) throw ordenError;
-    if (!ordenData) throw new Error('No se pudo generar la orden de servicio');
+    if (ordenError) {
+      console.error('Error en insert orden:', ordenError);
+      throw ordenError;
+    }
+    if (!ordenData) throw new Error('La orden no devolvió datos tras el registro');
 
     const resultData = ordenData as any;
     return { success: true, ordenId: resultData.id, folio: resultData.folio };
@@ -68,7 +80,7 @@ export async function createReceptionOrder(data: ReceptionFormValues) {
     console.error('Error detallado en recepción:', error);
     
     // Capturar errores comunes de Supabase para guiar al usuario
-    let userFriendlyError = error.message || 'Error desconocido';
+    let userFriendlyError = `${error.message || 'Error desconocido'} (${error.code || 'no-code'})`;
     
     if (error.code === '42P01') {
       userFriendlyError = 'La tabla no existe. Asegúrate de haber ejecutado el SQL en Supabase.';
