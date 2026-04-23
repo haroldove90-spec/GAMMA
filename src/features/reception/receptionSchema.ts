@@ -18,10 +18,13 @@ export const receptionSchema = z.object({
   
   // Orden
   fallaReportada: z.string().min(5, 'La descripción de la falla es obligatoria'),
-  costoEstimado: z.number().min(0).default(0),
-  anticipo: z.number().min(0).default(0),
+  costoEstimado: z.number().min(0, 'El costo no puede ser negativo').default(0),
+  anticipo: z.number().min(0, 'El anticipo no puede ser negativo').default(0),
   metodoPago: z.enum(['Efectivo', 'Transferencia', 'Tarjeta']).optional().default('Efectivo'),
   fechaPromesa: z.date().optional(),
+}).refine((data) => data.anticipo <= data.costoEstimado, {
+  message: "El anticipo no puede ser mayor al costo estimado",
+  path: ["anticipo"],
 });
 
 export type ReceptionFormValues = z.infer<typeof receptionSchema>;

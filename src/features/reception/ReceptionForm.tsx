@@ -121,6 +121,7 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
     }
   }
 
+  if (lastOrder) {
     return (
       <div className="max-w-xl mx-auto p-10 text-center animate-in fade-in zoom-in duration-700">
         <div className="bg-green-50 w-24 h-24 rounded-[30px] flex items-center justify-center mx-auto mb-8 text-green-500 shadow-inner">
@@ -163,6 +164,7 @@ export function ReceptionForm({ onBack, onSuccess }: ReceptionFormProps) {
         </div>
       </div>
     );
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-2 animate-in fade-in slide-in-from-bottom-6 duration-700">
